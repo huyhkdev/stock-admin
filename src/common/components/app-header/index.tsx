@@ -1,6 +1,5 @@
 import { AppHeader } from "./style";
 import { AppButton } from "../app-button";
-import { BellOutlined, UserOutlined } from "@ant-design/icons";
 import { HomeOutlined } from "@ant-design/icons";
 const Header = () => {
   return (

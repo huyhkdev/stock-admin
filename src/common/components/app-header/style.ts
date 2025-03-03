@@ -16,5 +16,6 @@ export const AppHeader = styled(Header)`
   }
   .header-title{
     font-size: 20px;
+    cursor: pointer;
   }
 `;

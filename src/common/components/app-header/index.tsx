@@ -1,11 +1,12 @@
+import { useState } from "react";
 import { AppHeader } from "./style";
 import { AppButton } from "../app-button";
-import { UserOutlined } from "@ant-design/icons";
-import { HomeOutlined } from "@ant-design/icons";
-const Header = () => {
+import { UserOutlined, HomeOutlined } from "@ant-design/icons";
+
+const Header = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   return (
     <AppHeader>
-      <div className="header-title">
+      <div className="header-title" onClick={toggleSidebar}>
         <HomeOutlined style={{ marginRight: 8 }} />
         Dashboard
       </div>

@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Select, Input, Space, Tag, Avatar, Checkbox, CheckboxChangeEvent, Flex } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import type { SearchProps, User } from './type';
+import type { SearchProps } from './type';
 import './style.pcss';
 import { UserDetailContent, UserStatisticComponent } from './components';
 import { UserOutlined } from '@ant-design/icons';
 import Search from 'antd/es/input/Search';
-import { tickers, users } from './sampleData';
+import { tickers } from './sampleData';
 import { filterType } from './constants';
 import CustomModal from '../../../common/components/custom-modal';
-import { createPayment } from '../../../apis/infoUser.api';
+import { getAllInfoUsers, UserInfo } from '../../../apis/users.api';
+import { useQuery } from '@tanstack/react-query';
+import moment from 'moment';
+
 const { Option } = Select;
 
 export const UserManagement = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<User | null>(null);
-    const showModal = (record: User) => {
+    const [selectedUser, setSelectedUser] = useState<UserInfo | null>(null);
+    const showModal = (record: UserInfo) => {
         setSelectedUser(record);
         setIsModalOpen(true);
     };
@@ -32,12 +35,12 @@ export const UserManagement = () => {
             setSelectedUserIds(prev => prev.filter(id => id !== userId));
         }
     };
-    const columns: ColumnsType<User> = [
+    const columns: ColumnsType<UserInfo> = [
         {
             title: '',
             dataIndex: 'checkbox',
             key: 'id',
-            render: (_e: React.ChangeEvent<HTMLInputElement>, record: User) => (
+            render: (_e: React.ChangeEvent<HTMLInputElement>, record: UserInfo) => (
                 <Checkbox
                     onChange={(e) => handleCheckboxChange(e, record.id)}
                     checked={selectedUserIds.includes(record.id)}
@@ -47,14 +50,14 @@ export const UserManagement = () => {
         },
         {
             title: 'Name',
-            dataIndex: 'fullName',
-            key: 'fullName',
-            onCell: (record: User) => ({
+            dataIndex: 'fullname',
+            key: 'fullname',
+            onCell: (record: UserInfo) => ({
                 onClick: () => showModal(record),
             }),
-            render: (fullName: string) => (
+            render: (fullname: string) => (
                 <div>
-                    <Space className='clickable-row' title='Click to view details' ><Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" />{fullName}</Space>
+                    <Space className='clickable-row' title='Click to view details' ><Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" />{fullname}</Space>
                 </div>
             )
         },
@@ -82,7 +85,7 @@ export const UserManagement = () => {
             title: 'Date of Birth',
             dataIndex: 'dob',
             key: 'dob',
-            render: (dob: Date) => dob.toLocaleDateString(),
+            render: (dob: Date) => moment(dob).format('YYYY-MM-DD'),
         },
         {
             title: 'Campus',
@@ -119,20 +122,20 @@ export const UserManagement = () => {
             dataIndex: 'createdAt',
             key: 'createdAt',
             sorter: (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-            render: (createAt: Date) => createAt.toLocaleDateString(),
+            render: (createdAt: Date) => moment(createdAt).format('YYYY-MM-DD HH:mm:ss'),
         },
         {
             title: 'Updated At',
             dataIndex: 'updatedAt',
             key: 'updatedAt',
             sorter: (a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
-            render: (updatedAt: Date) => updatedAt.toLocaleDateString(),
+            render: (updatedAt: Date) => moment(updatedAt).format('YYYY-MM-DD HH:mm:ss'),
         },
-        {
-            title: 'Balance',
-            dataIndex: 'balance',
-            key: 'balance',
-        },
+        // {
+        //     title: 'Balance',
+        //     dataIndex: 'balance',
+        //     key: 'balance',
+        // },
     ];
 
     const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
@@ -141,8 +144,12 @@ export const UserManagement = () => {
         getInfo();
     }, [])
     const getInfo = async () => {
-        console.log(await createPayment());
+        console.log(await getAllInfoUsers());
     }
+    const { data: users, isLoading } = useQuery({
+        queryKey: ['users'],
+        queryFn: getAllInfoUsers,
+      })
     return (
         <div>
             <Flex vertical gap={20}>
@@ -169,10 +176,10 @@ export const UserManagement = () => {
                     </div>
                 </Space>
 
-                <Table columns={columns} dataSource={users} bordered size='small' className="custom-table" />
+                <Table columns={columns} dataSource={users} bordered size='small' className="custom-table" loading={isLoading}/>
                 {selectedUser && (
                     <CustomModal
-                        title={`Portfolio of user ${selectedUser.fullName}`}
+                        title={`Portfolio of user ${selectedUser.fullname}`}
                         isModalOpen={isModalOpen}
                         handleCancel={handleCancel} width={800}
                         child={<UserDetailContent tickers={tickers.filter(ticker => ticker.uid === selectedUser.id)} />}

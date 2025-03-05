@@ -1,9 +1,10 @@
-import { Ticker, User } from "./type";
+import { UserInfo } from './../../../apis/users.api';
+import { Ticker } from "./type";
 
-export const users: User[] = [
+export const users: UserInfo[] = [
     {
         id: "user123",
-        fullName: "Jane Doe",
+        fullname: "Jane Doe",
         email: "jane.doe@example.com",
         role: "student",
         cic: "123231231231",
@@ -17,7 +18,7 @@ export const users: User[] = [
     },
     {
         id: "user456",
-        fullName: "John Smith",
+        fullname: "John Smith",
         email: "john.smith@example.com",
         role: "admin",
         cic: "123231231231",
@@ -31,7 +32,7 @@ export const users: User[] = [
     },
     {
         id: "user789",
-        fullName: "Alice Nguyen",
+        fullname: "Alice Nguyen",
         email: "alice.nguyen@example.com",
         role: "teacher",
         cic: "123231231231",
@@ -45,7 +46,7 @@ export const users: User[] = [
     },
     {
         id: "user101",
-        fullName: "Bob Tran",
+        fullname: "Bob Tran",
         email: "bob.tran@example.com",
         role: "student",
         cic: "123231231231",
@@ -59,7 +60,7 @@ export const users: User[] = [
     },
     {
         id: "user102",
-        fullName: "Clara Le",
+        fullname: "Clara Le",
         email: "clara.le@example.com",
         role: "staff",
         cic: "123231231231",

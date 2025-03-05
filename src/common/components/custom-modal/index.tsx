@@ -25,7 +25,7 @@ const CustomModal = ({ title, isModalOpen, handleCancel, child, width }: CustomM
                 xxl: '40%',
             }}
             style={{ overflowY: 'auto', maxHeight: '85vh', padding: '0', borderRadius: '1rem', scrollbarWidth: 'none' }}
-            bodyStyle={{ maxHeight: '70vh', overflowY: 'auto', scrollbarWidth: 'none' }}
+            body={{ maxHeight: '70vh', overflowY: 'auto', scrollbarWidth: 'none' }}
         >
             {child}
         </Modal>

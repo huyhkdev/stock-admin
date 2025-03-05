@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Menu } from "antd";
 import {
   OrderedListOutlined,
@@ -14,11 +14,11 @@ const menuItems = [
   {
     key: "1",
     label: (
-      <Link onClick={() => onScrollToTop("create-form")} to="/">
+      <Link onClick={() => onScrollToTop("create-form")} to="/users">
         User Management
       </Link>
     ),
-    path: "/",
+    path: "/users",
     icon: <UserOutlined />,
   },
   {
@@ -54,16 +54,16 @@ const menuItems = [
 ];
 
 const AppSider = ({ isSidebarOpen }: { isSidebarOpen: boolean }) => {
-
   const location = useLocation();
+
   const selectedKey =
     menuItems.find((item) => item.path === location.pathname)?.key || "";
-  useEffect(() => {
-  }, [selectedKey]);
   return (
-    <StyledSider collapsed={!isSidebarOpen}
+    <StyledSider
+      collapsed={!isSidebarOpen}
       collapsedWidth={0}
       width={300}
+      hidden={!selectedKey}
     >
       <div className="menu-section">
         <Menu

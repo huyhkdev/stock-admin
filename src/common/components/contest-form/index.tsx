@@ -5,7 +5,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import utc from 'dayjs/plugin/utc';
 import './style.pcss'
 import { useState } from 'react';
-import { Contest } from '../../../tabs/contest-management/type';
+import { Contest } from '../../../tabs/management/contest/type';
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 dayjs.extend(customParseFormat);

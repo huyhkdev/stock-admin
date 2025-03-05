@@ -13,7 +13,6 @@ const App: React.FC = () => {
     setIsSidebarOpen((prev) => !prev);
   };
   useEffect(() => {
-    console.log("isSidebarOpen: ", isSidebarOpen);
   }, [isSidebarOpen]);
 
   return (

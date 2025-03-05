@@ -1,7 +1,8 @@
-import { Col, Flex, Row, Space } from "antd";
+import { Space } from "antd";
 import MatchingListComponent from "./MatchingListComponent";
 import MatchingLineChartComponent from "./MatchingLineChartComponent";
-const MatchingManagement = () => {
+
+export const MatchingManagement = () => {
     return (
         <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
             <h1 style={{ fontSize: 24, fontWeight: 600 }}>Matching Management</h1>
@@ -10,4 +11,3 @@ const MatchingManagement = () => {
         </Space>
     );
 };
-export default MatchingManagement;

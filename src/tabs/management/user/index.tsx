@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
-import { Table, Button, Select, Input, Space, Tag, Avatar, Checkbox, Popover, CheckboxChangeEvent, Flex } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Table, Button, Select, Input, Space, Tag, Avatar, Checkbox, CheckboxChangeEvent, Flex } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import type { SearchProps, Ticker, User } from './type';
+import type { SearchProps, User } from './type';
 import './style.pcss';
 import { UserDetailContent, UserStatisticComponent } from './components';
 import { UserOutlined } from '@ant-design/icons';
 import Search from 'antd/es/input/Search';
 import { tickers, users } from './sampleData';
 import { filterType } from './constants';
-import CustomModal from '../../common/components/custom-modal';
+import CustomModal from '../../../common/components/custom-modal';
+import { createPayment } from '../../../apis/infoUser.api';
 const { Option } = Select;
 
-const UserList: React.FC = () => {
+export const UserManagement = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const showModal = (record: User) => {
@@ -135,7 +136,13 @@ const UserList: React.FC = () => {
     ];
 
     const onSearch: SearchProps['onSearch'] = (value, _e, info) => console.log(info?.source, value);
-
+    useEffect(()=> {
+        console.log(123);
+        getInfo();
+    }, [])
+    const getInfo = async () => {
+        console.log(await createPayment());
+    }
     return (
         <div>
             <Flex vertical gap={20}>
@@ -176,5 +183,3 @@ const UserList: React.FC = () => {
         </div>
     );
 };
-
-export default UserList;

@@ -1,8 +1,8 @@
 import { UserOutlined, CarryOutOutlined, CalendarOutlined } from '@ant-design/icons';
-import { StatisticCardProps } from "../../user-management/type";
+import { StatisticCardProps } from "../../user/type";
 import { Card, Col, Row } from "antd";
 import { Contest } from "../type";
-import { contestParticipants } from '.././sampleData';
+import { contestParticipants } from '../sampleData';
 const StatisticCard: React.FC<StatisticCardProps> = ({ icon, value, label }) => {
     return (
         <Card

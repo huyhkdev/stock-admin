@@ -1,4 +1,4 @@
-import PieMatch from "../../common/components/pie-chart";
+import PieMatch from "../../../common/components/pie-chart";
 import { pieOrderData } from "./sampleData";
 const PieStatusChartComponent = () => {
     return (

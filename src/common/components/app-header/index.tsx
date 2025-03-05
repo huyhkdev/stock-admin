@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { AppHeader } from "./style";
 import { AppButton } from "../app-button";
 import { UserOutlined, HomeOutlined } from "@ant-design/icons";

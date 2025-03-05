@@ -1,7 +1,6 @@
 import api from "./axiosCustom";
 
 export const createPayment = async (paymentData: any) => {
-  console.log(paymentData);
   const response = await api.post("/create_payment_url", paymentData);
   return response.data;
 };

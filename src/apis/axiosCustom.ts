@@ -1,8 +1,8 @@
 import axios, { type AxiosInstance } from "axios";
-import { developmentURL, paymentURL, productionURL } from "./contants";
-// const baseURL =
-//   process.env.NODE_ENV === "development" ? developmentURL : productionURL;
-const baseURL = paymentURL;
+import { developmentURL, productionURL } from "./contants";
+const baseURL =
+  process.env.NODE_ENV === "development" ? developmentURL : productionURL;
+
 export class Api {
   instance: AxiosInstance;
   constructor() {

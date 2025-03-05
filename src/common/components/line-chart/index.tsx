@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
-import { OrderLineChartProps } from '../../../tabs/order-management/type';
-import { OrderMatchChartProps } from '../../../tabs/matching-management/type';
-import { ContestChartProps } from '../../../tabs/contest-management/type';
+import { OrderLineChartProps } from '../../../tabs/management/order/type';
+import { OrderMatchChartProps } from '../../../tabs/management/matching/type';
+import { ContestChartProps } from '../../../tabs/management/contest/type';
 
 interface LineChartProps {
     formatedData: OrderLineChartProps | OrderMatchChartProps | ContestChartProps;

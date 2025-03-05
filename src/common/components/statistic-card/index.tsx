@@ -1,5 +1,5 @@
 import { Card } from "antd";
-import { StatisticCardProps } from "../../../tabs/user-management/type";
+import { StatisticCardProps } from "../../../tabs/management/user/type";
 
 const StatisticCard: React.FC<StatisticCardProps> = ({ icon, value, label }) => {
     return (

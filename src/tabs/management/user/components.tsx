@@ -8,7 +8,7 @@ import {
 import { StatisticCardProps, Ticker, UserDetailContentProps } from './type';
 import './components.pcss';
 import type { ColumnsType } from 'antd/es/table';
-import StatisticCard from '../../common/components/statistic-card';
+import StatisticCard from '../../../common/components/statistic-card';
 
 export const UserStatisticComponent: React.FC = () => {
     return (

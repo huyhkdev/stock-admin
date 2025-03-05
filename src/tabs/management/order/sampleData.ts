@@ -1,4 +1,4 @@
-import { Order, OrderLineChartProps, OrderPieChartProps, OrderStatusChartProps } from "./type";
+import { Order, OrderLineChartProps, OrderPieChartProps } from "./type";
 
 export const dayData: Array<{ time: string; customValues: Record<string, number> }> = [
     {

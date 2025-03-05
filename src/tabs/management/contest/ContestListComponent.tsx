@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import { Contest, ContestParticipant } from "./type";
 import { AuditOutlined, DeleteOutlined, EditOutlined, MinusOutlined, MoreOutlined } from '@ant-design/icons';
 import { filterType } from "./constants";
-import CustomModal from "../../common/components/custom-modal";
-import ContestForm from "../../common/components/contest-form";
+import CustomModal from "../../../common/components/custom-modal";
+import ContestForm from "../../../common/components/contest-form";
 import ContestDetailComponent from "./ContestDetailComponent";
 const { Option } = Select;
 

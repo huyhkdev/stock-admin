@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Menu } from "antd";
 import {
   OrderedListOutlined,
@@ -9,7 +9,6 @@ import {
 import { StyledSider } from "./style";
 import { Link, useLocation } from "react-router-dom";
 import { onScrollToTop } from "../../../utils/scroll";
-import { use } from "echarts/types/src/extension.js";
 
 const menuItems = [
   {
@@ -60,8 +59,6 @@ const AppSider = ({ isSidebarOpen }: { isSidebarOpen: boolean }) => {
   const selectedKey =
     menuItems.find((item) => item.path === location.pathname)?.key || "";
   useEffect(() => {
-    console.log("isSidebarOpen: ", isSidebarOpen);
-    console.log("selectedKey: ", selectedKey);
   }, [selectedKey]);
   return (
     <StyledSider collapsed={!isSidebarOpen}

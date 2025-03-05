@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import LineChart from "../../common/components/line-chart";
+import LineChart from "../../../common/components/line-chart";
 import { dayOrderData, monthOrderData, orders, weekOrderData, yearOrderData } from "./sampleData";
 import { OrderLineChartProps } from "./type";
 import { Select } from "antd";

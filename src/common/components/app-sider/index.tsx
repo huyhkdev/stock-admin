@@ -1,13 +1,15 @@
+import { useEffect, useState } from "react";
 import { Menu } from "antd";
 import {
   OrderedListOutlined,
   SyncOutlined,
   TrophyOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
-import { UserOutlined } from "@ant-design/icons";
 import { StyledSider } from "./style";
 import { Link, useLocation } from "react-router-dom";
 import { onScrollToTop } from "../../../utils/scroll";
+import { use } from "echarts/types/src/extension.js";
 
 const menuItems = [
   {
@@ -23,45 +25,49 @@ const menuItems = [
   {
     key: "2",
     label: (
-      <Link onClick={() => onScrollToTop()} to="/about">
+      <Link onClick={() => onScrollToTop()} to="/order">
         Order Management
       </Link>
     ),
-    path: "/about",
+    path: "/order",
     icon: <OrderedListOutlined />,
   },
   {
     key: "3",
     label: (
-      <Link onClick={() => onScrollToTop()} to="/contact">
+      <Link onClick={() => onScrollToTop()} to="/matching">
         Matching Management
       </Link>
     ),
-    path: "/contact",
+    path: "/matching",
     icon: <SyncOutlined />,
   },
   {
-    key: "3",
+    key: "4",
     label: (
-      <Link onClick={() => onScrollToTop()} to="/contact">
+      <Link onClick={() => onScrollToTop()} to="/contest">
         Contest Management
       </Link>
     ),
-    path: "/contact",
+    path: "/contest",
     icon: <TrophyOutlined />,
   },
 ];
 
-const AppSider = () => {
+const AppSider = ({ isSidebarOpen }: { isSidebarOpen: boolean }) => {
+
   const location = useLocation();
-  // const navigate = useNavigate();
   const selectedKey =
     menuItems.find((item) => item.path === location.pathname)?.key || "";
-  // const navigateUrl = (url: string) => {
-  //   navigate(url);
-  // }
+  useEffect(() => {
+    console.log("isSidebarOpen: ", isSidebarOpen);
+    console.log("selectedKey: ", selectedKey);
+  }, [selectedKey]);
   return (
-    <StyledSider width={300}>
+    <StyledSider collapsed={!isSidebarOpen}
+      collapsedWidth={0}
+      width={300}
+    >
       <div className="menu-section">
         <Menu
           mode="vertical"

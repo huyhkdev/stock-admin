@@ -9,7 +9,7 @@ export const AppStyle = styled.div`
 
     .ant-layout-sider {
       max-width: 250px !important;
-      min-width: 250px !important;
+      min-width: 5rem !important;
       width: 250px !important;
       color: #000;
     }

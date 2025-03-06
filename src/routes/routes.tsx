@@ -1,25 +1,44 @@
-import { Routes, Route } from "react-router-dom";
-import About from "../tabs/about";
-import Contact from "../tabs/contact";
-import Payment from "../tabs/payment";
-import UserManagement from "../tabs/user-management";
-import OrderManagement from "../tabs/order-management";
-import MatchingManagement from "../tabs/matching-management";
-import ContestManagement from "../tabs/contest-management";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import {
+  ContestManagement,
+  MatchingManagement,
+  OrderManagement,
+  UserManagement,
+} from "../tabs/management";
+import LoginScreen from "../tabs/auth/login";
+import { useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const AppRoutes = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { isLoggedIn } = useAuth();
+
+  useEffect(() => {
+    if (!isLoggedIn && location.pathname !== "/login") {
+      navigate('/login');
+    }
+  }, [isLoggedIn, location.pathname, navigate]);
+
   return (
     <Routes>
-      <Route path="/" element={<UserManagement />} />
-      <Route path="/order" element={<OrderManagement />} />
-      <Route path="/matching" element={<MatchingManagement />} />
-      <Route path="/contest" element={<ContestManagement />} />
+      <Route
+        path="/"
+        element={isLoggedIn ? <Navigate to="/users" /> : <Navigate to="/login" />}
+      />
 
-      <Route path="/about" element={<About />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/payment" element={<Payment />} />
-      {/* <Route path="/payment/transactions" element={<TransactionList />} />
-      <Route path="/payment/transactions/:id" element={<TransactionDetail />} /> */}
+      {isLoggedIn ? (
+        <>
+          <Route path="/users" element={<UserManagement />} />
+          <Route path="/order" element={<OrderManagement />} />
+          <Route path="/matching" element={<MatchingManagement />} />
+          <Route path="/contest" element={<ContestManagement />} />
+        </>
+      ) : (
+        <Route path="/login" element={<LoginScreen />} />
+      )}
+
+      <Route path="*" element={<Navigate to={isLoggedIn ? "/users" : "/login"} />} />
     </Routes>
   );
 };

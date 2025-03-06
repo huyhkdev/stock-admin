@@ -9,17 +9,16 @@ import {
 import { StyledSider } from "./style";
 import { Link, useLocation } from "react-router-dom";
 import { onScrollToTop } from "../../../utils/scroll";
-import { use } from "echarts/types/src/extension.js";
 
 const menuItems = [
   {
     key: "1",
     label: (
-      <Link onClick={() => onScrollToTop("create-form")} to="/">
+      <Link onClick={() => onScrollToTop("create-form")} to="/users">
         User Management
       </Link>
     ),
-    path: "/",
+    path: "/users",
     icon: <UserOutlined />,
   },
   {
@@ -55,18 +54,16 @@ const menuItems = [
 ];
 
 const AppSider = ({ isSidebarOpen }: { isSidebarOpen: boolean }) => {
-
   const location = useLocation();
+
   const selectedKey =
     menuItems.find((item) => item.path === location.pathname)?.key || "";
-  useEffect(() => {
-    console.log("isSidebarOpen: ", isSidebarOpen);
-    console.log("selectedKey: ", selectedKey);
-  }, [selectedKey]);
   return (
-    <StyledSider collapsed={!isSidebarOpen}
+    <StyledSider
+      collapsed={!isSidebarOpen}
       collapsedWidth={0}
       width={300}
+      hidden={!selectedKey}
     >
       <div className="menu-section">
         <Menu

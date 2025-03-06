@@ -1,24 +1,29 @@
 import axios, { type AxiosInstance } from "axios";
-import { developmentURL, paymentURL, productionURL } from "./contants";
-// const baseURL =
-//   process.env.NODE_ENV === "development" ? developmentURL : productionURL;
-const baseURL = paymentURL;
+
 export class Api {
   instance: AxiosInstance;
   constructor() {
     this.instance = axios.create({
-      baseURL,
       timeout: 5000,
       headers: {
         "Content-Type": "application/json",
       },
     });
+    this.setupInterceptors();
   }
 
   getInstance(){
     return this.instance;
   }
-
+  private setupInterceptors() {
+    this.instance.interceptors.request.use((config) => {
+      const token = localStorage.getItem('accessToken')
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
+      return config
+    })
+  }
 }
 const api = new Api().getInstance();
 export default api;

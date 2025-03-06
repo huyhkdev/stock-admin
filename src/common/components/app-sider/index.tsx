@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Menu } from "antd";
 import {
   OrderedListOutlined,
@@ -15,7 +14,7 @@ const menuItems = [
     key: "1",
     label: (
       <Link onClick={() => onScrollToTop("create-form")} to="/users">
-        User Management
+        Manage Users
       </Link>
     ),
     path: "/users",
@@ -25,7 +24,7 @@ const menuItems = [
     key: "2",
     label: (
       <Link onClick={() => onScrollToTop()} to="/order">
-        Order Management
+        Manage Orders
       </Link>
     ),
     path: "/order",
@@ -35,7 +34,7 @@ const menuItems = [
     key: "3",
     label: (
       <Link onClick={() => onScrollToTop()} to="/matching">
-        Matching Management
+        Manage Orders Match
       </Link>
     ),
     path: "/matching",
@@ -45,7 +44,7 @@ const menuItems = [
     key: "4",
     label: (
       <Link onClick={() => onScrollToTop()} to="/contest">
-        Contest Management
+        Manage Contests
       </Link>
     ),
     path: "/contest",

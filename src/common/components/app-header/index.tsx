@@ -9,6 +9,7 @@ interface HeaderProps {
 
 const Header = ({ toggleSidebar }: HeaderProps) => {
   const { isLoggedIn, logout } = useAuth();
+  
   return (
     <AppHeader>
       <div className="header-title" onClick={toggleSidebar}>
@@ -19,7 +20,7 @@ const Header = ({ toggleSidebar }: HeaderProps) => {
       <div className="app-header--right">
         {isLoggedIn ? (
           <>
-            <AppButton icon={<UserOutlined />}>username</AppButton>
+            <AppButton icon={<UserOutlined />}>Admin</AppButton>
             <AppButton
               icon={<LogoutOutlined />}
               onClick={logout} 

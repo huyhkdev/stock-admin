@@ -20,15 +20,16 @@ import Search from "antd/es/input/Search";
 import { tickers } from "./sampleData";
 import { filterType } from "./constants";
 import CustomModal from "../../../common/components/custom-modal";
-import { getAllInfoUsers, UserInfo } from "../../../apis/users.api";
-import { useQuery } from "@tanstack/react-query";
+import { UserInfo } from "../../../apis/users.api";
 import moment from "moment";
+import { useInfoUsers } from "../../../hook/useInfoUsers";
 
 const { Option } = Select;
 
 export const UserManagement = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserInfo | null>(null);
+  const { data: users, isLoading } = useInfoUsers();
   const showModal = (record: UserInfo) => {
     setSelectedUser(record);
     setIsModalOpen(true);
@@ -164,10 +165,6 @@ export const UserManagement = () => {
   const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
     console.log(info?.source, value);
 
-  const { data: users, isLoading } = useQuery({
-    queryKey: ["users"],
-    queryFn: getAllInfoUsers,
-  });
   return (
     <div>
       <Flex vertical gap={20}>
@@ -201,7 +198,7 @@ export const UserManagement = () => {
           </Space>
 
           <div>
-            <span>Total: 143,624 and showing </span>
+            <span>Total: {users?.length} and showing </span>
             <Input
               style={{ width: 50, textAlign: "center", margin: "0 8px" }}
               defaultValue={10}

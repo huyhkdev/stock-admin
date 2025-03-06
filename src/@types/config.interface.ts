@@ -5,4 +5,5 @@ export interface ENV {
   VITE_CONTEXT_PATH: string | undefined;
   VITE_DATA_API_URL: string | undefined;
   VITE_AUTHEN_API_URL: string | undefined;
+  VITE_TRADE_API_URL: string | undefined;
 }

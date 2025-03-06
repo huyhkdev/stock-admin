@@ -1,7 +1,7 @@
 import { Form, Input, Button, Card, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { login, LoginCredentials } from "../../../apis/auth.api";
+import { AuthCredentials, login, LoginCredentials } from "../../../apis/auth.api";
 import { useAuth } from "../../../context/AuthContext";
 
 const LoginScreen = () => {
@@ -11,8 +11,8 @@ const LoginScreen = () => {
 
   const loginMutation = useMutation({
     mutationFn: login,
-    onSuccess: (data: {token: string}) => {
-      setLogin(data.token);
+    onSuccess: (data: AuthCredentials) => {
+      setLogin(data);
       message.success("Login successful");
       navigate("/users");
     },

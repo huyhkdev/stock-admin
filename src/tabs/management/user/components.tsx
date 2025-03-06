@@ -10,7 +10,7 @@ import './components.pcss';
 import type { ColumnsType } from 'antd/es/table';
 import StatisticCard from '../../../common/components/statistic-card';
 import { useInfoUsers } from '../../../hook/useInfoUsers';
-import { filterUsersByKey } from '../../../utils/filterUserProperties';
+import { filterUsersByKey } from '../../../utils/filterDataByProperties';
 
 export const UserStatisticComponent: React.FC = () => {
   const { data: users, isLoading } = useInfoUsers();

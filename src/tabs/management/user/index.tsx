@@ -9,6 +9,7 @@ import {
   Checkbox,
   CheckboxChangeEvent,
   Flex,
+  message,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { SearchProps } from "./type";
@@ -22,14 +23,21 @@ import CustomModal from "../../../common/components/custom-modal";
 import { UserInfo } from "../../../apis/users.api";
 import moment from "moment";
 import { useInfoUsers } from "../../../hook/useInfoUsers";
+import { filterUsersByKey } from "../../../utils/filterDataByProperties";
+import { blockUsers, unblockUsers } from "../../../apis/auth.api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const { Option } = Select;
 
+type OptionType = "All" | "Active User" | "Inactive User" | "Banned User";
+
 export const UserManagement = () => {
+  const queryClient = useQueryClient();
   const { data: users, isLoading } = useInfoUsers();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserInfo | null>(null);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [dataSearch, setDataSearch] = useState<UserInfo[] | undefined>();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
@@ -67,8 +75,8 @@ export const UserManagement = () => {
     },
     {
       title: "Name",
-      dataIndex: "fullname",
-      key: "fullname",
+      dataIndex: "fullName",
+      key: "fullName",
       onCell: (record: UserInfo) => ({
         onClick: () => showModal(record),
       }),
@@ -90,6 +98,9 @@ export const UserManagement = () => {
       title: "Role",
       dataIndex: "role",
       key: "role",
+      render: (role: string) => (
+        <b style={{ color: role === "blocker" ? "red" : "inherit" }}>{role}</b>
+      ),
     },
     {
       title: "CIC",
@@ -120,16 +131,10 @@ export const UserManagement = () => {
         let color: string;
         switch (status) {
           case "active":
-            color = "blue";
+            color = "green";
             break;
-          case "inactive":
-            color = "red";
-            break;
-          case "Not started":
-            color = "default";
-            break;
-          case "Waiting":
-            color = "gold";
+          case "pending":
+            color = "yellow";
             break;
           default:
             color = "default";
@@ -165,14 +170,63 @@ export const UserManagement = () => {
     //     key: 'balance',
     // },
   ];
-  const handleTableChange = (pagination: {current: number, pageSize: number}) => {
+  const handleTableChange = (pagination: {
+    current: number;
+    pageSize: number;
+  }) => {
     setCurrentPage(pagination.current);
     setPageSize(pagination.pageSize);
   };
 
-  const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
-    console.log(info?.source, value);
+  const onSearch: SearchProps["onSearch"] = (value) => {
+    setDataSearch(users ? filterUsersByKey(users, "email", value, true) : []);
+  };
 
+  const handleFilterUser = (value: OptionType) => {
+    switch (value) {
+      case "Active User":
+        setDataSearch(users ? filterUsersByKey(users, "state", "active") : []);
+        break;
+      case "Inactive User":
+        setDataSearch(users ? filterUsersByKey(users, "state", "pending") : []);
+        break;
+      case "Banned User":
+        setDataSearch(users ? filterUsersByKey(users, "role", "blocker") : []);
+        break;
+      case "All":
+      default:
+        setDataSearch(users);
+        break;
+    }
+  };
+
+  const blockMutation = useMutation({
+    mutationFn: blockUsers,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setSelectedUserIds([]);
+      message.success("Users selected has been blocked");
+    },
+    onError: () => message.error("Failed to block users"),
+  });
+
+  const unblockMutation = useMutation({
+    mutationFn: unblockUsers,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setSelectedUserIds([]);
+      message.success("Users selected has been active again");
+    },
+    onError: () => message.error("Failed to unblock users"),
+  });
+
+  const handleBlockUser = () => {
+    blockMutation.mutate(selectedUserIds);
+  };
+
+  const handleUnblockUser = () => {
+    unblockMutation.mutate(selectedUserIds);
+  };
   return (
     <div>
       <Flex vertical gap={20}>
@@ -185,7 +239,11 @@ export const UserManagement = () => {
         <UserStatisticComponent />
         <Space style={{ width: "100%", justifyContent: "space-between" }}>
           <Space>
-            <Select defaultValue="All User" style={{ width: "10rem" }}>
+            <Select
+              defaultValue="All"
+              style={{ width: "10rem" }}
+              onChange={(value: OptionType) => handleFilterUser(value)}
+            >
               {filterType.map((type) => (
                 <Option key={type} value={type}>
                   {type}
@@ -193,27 +251,44 @@ export const UserManagement = () => {
               ))}
             </Select>
             <Search
-              placeholder=" Search user"
+              placeholder=" Search email"
               prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
               style={{ width: 200 }}
               onSearch={onSearch}
             />
             {selectedUserIds.length > 0 && (
-              <Button danger type="primary">
-                Ban User
-              </Button>
+              <Space>
+                <Button
+                  danger
+                  type="primary"
+                  onClick={handleBlockUser}
+                  loading={blockMutation.isPending}
+                >
+                  Block User
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={handleUnblockUser}
+                  loading={unblockMutation.isPending}
+                >
+                  Unblock User
+                </Button>
+              </Space>
             )}
           </Space>
 
           <div>
-            <span>Total: {users?.length.toLocaleString()} and showing {pageSize} / page</span>
+            <span>
+              Total: {users?.length.toLocaleString()} and showing {pageSize} /
+              page
+            </span>
           </div>
         </Space>
 
         <Table
           rowKey={(record) => record.id}
           columns={columns}
-          dataSource={users}
+          dataSource={dataSearch ? dataSearch : users}
           bordered
           size="small"
           className="custom-table"
@@ -221,10 +296,11 @@ export const UserManagement = () => {
           pagination={{
             current: currentPage,
             pageSize: pageSize,
-            total: users?.length,
-            onChange: (page, pageSize) => handleTableChange({ current: page, pageSize }),
+            total: dataSearch ? dataSearch.length : users?.length,
+            onChange: (page, pageSize) =>
+              handleTableChange({ current: page, pageSize }),
             showSizeChanger: true,
-            pageSizeOptions: ['5', '10', '15', '20'],
+            pageSizeOptions: ["5", "10", "15", "20"],
             showTotal: (total: number) => `Total ${total} items`,
           }}
         />

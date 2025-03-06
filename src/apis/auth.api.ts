@@ -16,3 +16,11 @@ export const login = async (credentials: LoginCredentials): Promise<AuthCredenti
     refreshToken: response.data.data.refreshToken,
   };
 };
+
+export const blockUsers = async (uids: string[]): Promise<void> => {
+  await api.post(`${appUrls.authenURL}/admin/block`, { uids });
+}
+
+export const unblockUsers = async (uids: string[]): Promise<void> => {
+  await api.post(`${appUrls.authenURL}/admin/un-block`, { uids });
+}

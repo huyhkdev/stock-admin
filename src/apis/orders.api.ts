@@ -1,19 +1,28 @@
 import api from "./axiosCustom";
 import { appUrls } from "./contants";
 
+export type OrderMarketType = "limit" | "market";
+
+export type OrderSideType = "buy" | "sell";
+
+export type OrderStatusType =
+  | "pending"
+  | "partially_filled"
+  | "completed"
+  | "cancelled";
+
 export interface OrderInfo {
-  id: string,
-  fullname: string,
-  email: string,
-  role: string,
-  cic: string,
-  gender: string,
-  dob: Date,
-  campus: string,
-  state: string,
-  createdAt: Date,
-  updatedAt: Date,
-  balance: number;
+  id: 287;
+  email: string;
+  ticker: string;
+  type: OrderMarketType;
+  price: number;
+  side: OrderSideType;
+  status: OrderStatusType;
+  totalAmount: number;
+  filledAmount: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const getAllInfoOrders = async (): Promise<OrderInfo[]> => {

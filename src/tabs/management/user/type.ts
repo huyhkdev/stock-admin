@@ -9,7 +9,7 @@ export interface Ticker {
 
 export interface StatisticCardProps {
   icon: React.ReactNode;
-  value: string;
+  value: string | number;
   label: string;
 }
 

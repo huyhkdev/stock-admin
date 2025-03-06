@@ -3,7 +3,6 @@ import {
   Table,
   Button,
   Select,
-  Input,
   Space,
   Tag,
   Avatar,
@@ -27,9 +26,13 @@ import { useInfoUsers } from "../../../hook/useInfoUsers";
 const { Option } = Select;
 
 export const UserManagement = () => {
+  const { data: users, isLoading } = useInfoUsers();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserInfo | null>(null);
-  const { data: users, isLoading } = useInfoUsers();
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
   const showModal = (record: UserInfo) => {
     setSelectedUser(record);
     setIsModalOpen(true);
@@ -39,7 +42,7 @@ export const UserManagement = () => {
     setIsModalOpen(false);
     setSelectedUser(null);
   };
-  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+
   const handleCheckboxChange = (e: CheckboxChangeEvent, userId: string) => {
     if (e.target.checked) {
       setSelectedUserIds((prev) => [...prev, userId]);
@@ -47,6 +50,7 @@ export const UserManagement = () => {
       setSelectedUserIds((prev) => prev.filter((id) => id !== userId));
     }
   };
+
   const columns: ColumnsType<UserInfo> = [
     {
       title: "",
@@ -161,6 +165,10 @@ export const UserManagement = () => {
     //     key: 'balance',
     // },
   ];
+  const handleTableChange = (pagination: {current: number, pageSize: number}) => {
+    setCurrentPage(pagination.current);
+    setPageSize(pagination.pageSize);
+  };
 
   const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
     console.log(info?.source, value);
@@ -198,12 +206,7 @@ export const UserManagement = () => {
           </Space>
 
           <div>
-            <span>Total: {users?.length} and showing </span>
-            <Input
-              style={{ width: 50, textAlign: "center", margin: "0 8px" }}
-              defaultValue={10}
-            />
-            <span>page</span>
+            <span>Total: {users?.length.toLocaleString()} and showing {pageSize} / page</span>
           </div>
         </Space>
 
@@ -215,6 +218,15 @@ export const UserManagement = () => {
           size="small"
           className="custom-table"
           loading={isLoading}
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: users?.length,
+            onChange: (page, pageSize) => handleTableChange({ current: page, pageSize }),
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '15', '20'],
+            showTotal: (total: number) => `Total ${total} items`,
+          }}
         />
         {selectedUser && (
           <CustomModal

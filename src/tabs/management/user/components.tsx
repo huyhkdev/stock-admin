@@ -1,30 +1,37 @@
 import React from 'react';
-import { Card, Row, Col, Table } from 'antd';
+import { Row, Col, Table } from 'antd';
 import {
     UserOutlined,
     TrademarkOutlined,
     FireOutlined,
 } from '@ant-design/icons';
-import { StatisticCardProps, Ticker, UserDetailContentProps } from './type';
+import { Ticker, UserDetailContentProps } from './type';
 import './components.pcss';
 import type { ColumnsType } from 'antd/es/table';
 import StatisticCard from '../../../common/components/statistic-card';
+import { useInfoUsers } from '../../../hook/useInfoUsers';
+import { filterUsersByKey } from '../../../utils/filterUserProperties';
 
 export const UserStatisticComponent: React.FC = () => {
+  const { data: users, isLoading } = useInfoUsers();
+  const totalUsers = users ? users.length.toLocaleString() : 0;
+  const totalUsersActive = users ? filterUsersByKey(users, 'state', 'active').length.toLocaleString() : 0;
+  
     return (
-
         <Row gutter={16} className='card-container'>
             <Col span={8}>
                 <StatisticCard
                     icon={<UserOutlined />}
-                    value="143,624"
+                    value={totalUsers}
+                    loading={isLoading}
                     label="users in system"
                 />
             </Col>
             <Col span={8}>
                 <StatisticCard
                     icon={<FireOutlined style={{ color: 'red' }} />}
-                    value="12,343"
+                    value={totalUsersActive}
+                    loading={isLoading}
                     label="users in active"
                 />
             </Col>
@@ -32,6 +39,7 @@ export const UserStatisticComponent: React.FC = () => {
                 <StatisticCard
                     icon={<TrademarkOutlined style={{ color: 'green' }} />}
                     value="12,454"
+                    loading={isLoading}
                     label="users has at least 1 ticker"
                 />
             </Col >

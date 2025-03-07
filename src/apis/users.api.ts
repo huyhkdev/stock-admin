@@ -3,7 +3,7 @@ import { appUrls } from "./contants";
 
 export interface UserInfo {
   id: string,
-  fullname: string,
+  fullName: string,
   email: string,
   role: string,
   cic: string,
@@ -16,7 +16,32 @@ export interface UserInfo {
   balance: number;
 }
 
+export interface Portfolio {
+  id: string;
+  uid: string;
+  ticker: string;
+  amount: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Wallet {
+  id: string;
+  uid: string;
+  balance: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+export interface Assets {
+  portfolios: Portfolio[];
+  wallet: Wallet[];
+}
 export const getAllInfoUsers = async (): Promise<UserInfo[]> => {
   const response = await api.get(`${appUrls.authenURL}/admin/total-info`);
+  return response.data.data;
+};
+
+export const getUserAssets = async (uid: string): Promise<Assets> => {
+  const response = await api.get(`${appUrls.tradeURL}/admin/assets/${uid}`);
   return response.data.data;
 };

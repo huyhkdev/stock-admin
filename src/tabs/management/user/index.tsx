@@ -17,12 +17,11 @@ import "./style.pcss";
 import { UserDetailContent, UserStatisticComponent } from "./components";
 import { UserOutlined } from "@ant-design/icons";
 import Search from "antd/es/input/Search";
-import { tickers } from "./sampleData";
 import { filterType } from "./constants";
 import CustomModal from "../../../common/components/custom-modal";
 import { UserInfo } from "../../../apis/users.api";
 import moment from "moment";
-import { useInfoUsers } from "../../../hook/useInfoUsers";
+import { useInfoAssetsUser, useInfoUsers } from "../../../hook/useInfoUsers";
 import { filterUsersByKey } from "../../../utils/filterDataByProperties";
 import { blockUsers, unblockUsers } from "../../../apis/auth.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -34,15 +33,22 @@ type OptionType = "All" | "Active User" | "Inactive User" | "Banned User";
 export const UserManagement = () => {
   const queryClient = useQueryClient();
   const { data: users, isLoading } = useInfoUsers();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [uidSelected, setUidSelected] = useState<string>("");
+  const { data: assets, isLoading: loadingAssetsUser } = useInfoAssetsUser(uidSelected);
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
   const [selectedUser, setSelectedUser] = useState<UserInfo | null>(null);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+
   const [dataSearch, setDataSearch] = useState<UserInfo[] | undefined>();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(5);
 
   const showModal = (record: UserInfo) => {
     setSelectedUser(record);
+    setUidSelected(record.id);
     setIsModalOpen(true);
   };
 
@@ -222,10 +228,12 @@ export const UserManagement = () => {
 
   const handleBlockUser = () => {
     blockMutation.mutate(selectedUserIds);
+    setDataSearch(undefined);
   };
 
   const handleUnblockUser = () => {
     unblockMutation.mutate(selectedUserIds);
+    setDataSearch(undefined);
   };
   return (
     <div>
@@ -304,15 +312,16 @@ export const UserManagement = () => {
             showTotal: (total: number) => `Total ${total} items`,
           }}
         />
-        {selectedUser && (
+        {(selectedUser && assets) && (
           <CustomModal
-            title={`Portfolio of user ${selectedUser.fullname}`}
+            title={`Portfolio of ${selectedUser.fullName}`}
             isModalOpen={isModalOpen}
             handleCancel={handleCancel}
             width={800}
             child={
               <UserDetailContent
-                tickers={tickers.filter(
+                isLoading={loadingAssetsUser}
+                data={assets?.portfolios?.filter(
                   (ticker) => ticker.uid === selectedUser.id
                 )}
               />

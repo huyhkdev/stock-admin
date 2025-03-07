@@ -1,11 +1,4 @@
-export interface Ticker {
-  id: string;
-  uid: string;
-  ticker: string;
-  amount: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { Portfolio } from "../../../apis/users.api";
 
 export interface StatisticCardProps {
   icon: React.ReactNode;
@@ -14,7 +7,8 @@ export interface StatisticCardProps {
 }
 
 export interface UserDetailContentProps {
-  tickers: Ticker[];
+  data: Portfolio[];
+  isLoading: boolean;
 }
 export interface SearchProps {
   onSearch: (

@@ -12,7 +12,7 @@ export type OrderStatusType =
   | "cancelled";
 
 export interface OrderInfo {
-  id: 287;
+  id: string;
   email: string;
   ticker: string;
   type: OrderMarketType;

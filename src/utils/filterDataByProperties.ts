@@ -20,13 +20,13 @@ export const filterUsersByKey = (
 };
 
 export const filterOrdersByKey = (
-  orders: OrderInfo[], 
+  orders: OrderInfo[] | undefined, 
   key: keyof OrderInfo, 
   value?: OrderInfo[keyof OrderInfo], 
   fuzzySearch?: boolean
 ): OrderInfo[] => {
 
-  return orders.filter(order => {
+  return orders ? orders.filter(order => {
     const orderValue = order[key];
 
     if (fuzzySearch && typeof orderValue === 'string' && typeof value === 'string') {
@@ -34,5 +34,5 @@ export const filterOrdersByKey = (
     } else {
       return orderValue === value;
     }
-  });
+  }) : [];
 };

@@ -10,18 +10,31 @@ const keysFilter = ["completed", "cancelled", "pending", "partially_filled"];
 
 export const OrderManagement = () => {
   const { data: orders, isLoading } = useInfoOrders();
+
   const dataOrderPieChart = keysFilter.map((key) => {
     return {
       name: key,
       value: filterOrdersByKey(orders, "status", key).length,
+      color:
+        key === "completed"
+          ? "#4caf50"
+          : key === "cancelled"
+          ? "#f44336"
+          : key === "pending"
+          ? "#ff9800"
+          : "#2196f3",
     };
   });
-  const dataOrderList: OrderInfo[] = orders ? orders?.map((order) => {
-    return {
-      ...order,
-      id: `O${order.id.toString().padStart(5, "0")}`,
-    };
-  }) : [];
+
+  const dataOrderList: OrderInfo[] = orders
+    ? orders?.map((order) => {
+        return {
+          ...order,
+          id: `O${order.id.toString().padStart(5, "0")}`,
+        };
+      })
+    : [];
+
   return (
     <Space direction="vertical" size="middle" style={{ display: "flex" }}>
       <h1 style={{ fontSize: 24, fontWeight: 600 }}>Order Management</h1>
@@ -33,7 +46,7 @@ export const OrderManagement = () => {
           <OrderLineChartComponent />
         </Col>
       </Row>
-      <OrderListComponent data={dataOrderList} loading={isLoading}/>
+      <OrderListComponent data={dataOrderList} loading={isLoading} />
     </Space>
   );
 };

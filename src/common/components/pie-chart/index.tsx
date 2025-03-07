@@ -4,13 +4,15 @@ import * as echarts from "echarts";
 export interface PieChartData {
     name: string;
     value: number;
+    color?: string;
 }
 
 export interface PieChartProps {
     data: PieChartData[];
+    colors?: string[];
 }
 
-const PieChart: React.FC<PieChartProps> = ({ data }) => {
+const PieChart: React.FC<PieChartProps> = ({ data, colors }) => {
     const chartRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -22,11 +24,10 @@ const PieChart: React.FC<PieChartProps> = ({ data }) => {
                     trigger: "item"
                 },
                 legend: {
-                    orient: "horizontal", // display legends in a row
-                    top: "0",            // position at the very top
-                    left: "left",      // center horizontally
-                    itemGap: 20,         // gap between legend items
-                    // Optionally, you can adjust itemWidth and itemHeight
+                    orient: "horizontal",
+                    top: "0",           
+                    left: "left",     
+                    itemGap: 20,        
                     itemWidth: 15,
                     itemHeight: 10,
                 },
@@ -35,7 +36,12 @@ const PieChart: React.FC<PieChartProps> = ({ data }) => {
                         name: "Data",
                         type: "pie",
                         radius: "50%",
-                        data: data,
+                        data: data.map((item, index) => ({
+                            ...item,
+                            itemStyle: {
+                                color: colors ? colors[index % colors.length] : item.color
+                            }
+                        })),
                         emphasis: {
                             itemStyle: {
                                 shadowBlur: 10,
@@ -59,7 +65,7 @@ const PieChart: React.FC<PieChartProps> = ({ data }) => {
                 chartInstance.dispose();
             };
         }
-    }, [data]);
+    }, [data, colors]);
 
     return <div ref={chartRef} style={{ width: "100%", height: "400px" }} />;
 };

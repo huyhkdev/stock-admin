@@ -33,7 +33,7 @@ const LineStatusChartComponent: React.FC<LineChartProps> = (props) => {
     orders: OrderInfo[],
     interval: IntervalType
   ): OrderLineChartProps => {
-    let filteredOrders = filterOrdersByInterval(orders, interval, dateFilter);
+    const filteredOrders = filterOrdersByInterval(orders, interval, dateFilter);
 
     const dates = filteredOrders?.map((order) =>
       new Date(order.createdAt).toISOString()
@@ -80,7 +80,7 @@ const LineStatusChartComponent: React.FC<LineChartProps> = (props) => {
       const orderDate = new Date(order.createdAt).toISOString();
       const dateIndex = uniqueDates.indexOf(orderDate);
 
-      if (dateIndex !== -1) {
+      if (dateIndex !== -1 && order) {
         const statusKey =
           order.status === "partially_filled"
             ? "Partially filled"
@@ -141,6 +141,7 @@ const LineStatusChartComponent: React.FC<LineChartProps> = (props) => {
     if (!isLoading) {
       setFormatedData(processOrderData(orders as OrderInfo[], activeInterval));
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading, dateFilter]);
 
   return (

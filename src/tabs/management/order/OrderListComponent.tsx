@@ -30,17 +30,17 @@ const ListComponent: React.FC<Props> = (props) => {
 
     switch (value) {
       case "Today":
-        filteredOrders = data.filter(order =>
+        filteredOrders = data?.filter(order =>
           moment(order.createdAt).isSame(moment(), "day")
         );
         break;
       case "This Week":
-        filteredOrders = data.filter(order =>
+        filteredOrders = data?.filter(order =>
           moment(order.createdAt).isSame(moment(), "week")
         );
         break;
       case "This Month":
-        filteredOrders = data.filter(order =>
+        filteredOrders = data?.filter(order =>
           moment(order.createdAt).isSame(moment(), "month")
         );
         break;
@@ -125,7 +125,7 @@ const ListComponent: React.FC<Props> = (props) => {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (status: string) => {
+      render: (status?: string) => {
         let color: string;
         switch (status) {
           case "pending":

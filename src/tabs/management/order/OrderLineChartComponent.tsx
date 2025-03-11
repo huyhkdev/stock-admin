@@ -17,6 +17,7 @@ import {
 import { useInfoOrders } from "../../../hook/useInfoOrders";
 import { OrderInfo } from "../../../apis/orders.api";
 import { ApexOptions } from "apexcharts";
+
 const { Option } = Select;
 
 const seriesData = {
@@ -31,11 +32,12 @@ const LineStatusChartComponent = () => {
 
   const processOrderData = (orders: OrderInfo[]): OrderLineChartProps => {
     const dates = orders?.map(
-      (order) => new Date(order.createdAt).toISOString().split("T")[0]
+      (order) => new Date(order.createdAt).toISOString()
     );
-
+    console.log(dates);
     const uniqueDates = [...new Set(dates)].sort();
     console.log(uniqueDates);
+  
     if (uniqueDates.length === 0) {
       return {
         series: [
@@ -60,22 +62,22 @@ const LineStatusChartComponent = () => {
           dataLabels: { enabled: false },
           stroke: { curve: "smooth", width: 2 },
           xaxis: { type: "datetime", categories: [] },
-          tooltip: { x: { format: "dd/MM/yy HH:mm" } },
+          tooltip: { x: { format: "dd/MM/yy HH:mm:ss" } }, // Updated to show time
         },
       };
     }
-
+  
     const statusData: { [key: string]: number[] } = {
       Pending: new Array(uniqueDates.length).fill(0),
       "Partially filled": new Array(uniqueDates.length).fill(0),
       Completed: new Array(uniqueDates.length).fill(0),
       Cancelled: new Array(uniqueDates.length).fill(0),
     };
-
+  
     orders?.forEach((order) => {
-      const orderDate = new Date(order.createdAt).toISOString().split("T")[0];
+      const orderDate = new Date(order.createdAt).toISOString(); // Keep full time from createdAt
       const dateIndex = uniqueDates.indexOf(orderDate);
-
+  
       if (dateIndex !== -1) {
         const statusKey =
           order.status === "partially_filled"
@@ -84,15 +86,15 @@ const LineStatusChartComponent = () => {
         statusData[statusKey][dateIndex]++;
       }
     });
-
+  
     const series: SeriesData[] = [
       { name: "Pending", data: statusData["Pending"] },
       { name: "Partially filled", data: statusData["Partially filled"] },
       { name: "Completed", data: statusData["Completed"] },
       { name: "Cancelled", data: statusData["Cancelled"] },
     ];
-
-    const categories = uniqueDates.map((date) => `${date}T00:00:00Z`);
+  
+    const categories = uniqueDates;
     const options: ApexOptions = {
       chart: {
         height: 350,
@@ -117,12 +119,14 @@ const LineStatusChartComponent = () => {
         categories: categories,
       },
       tooltip: {
-        x: { format: "dd/MM/yy HH:mm" },
+        x: { format: "dd/MM/yy HH:mm:ss" }, // Format includes time
       },
     };
-
+  
     return { series, options };
   };
+  
+  
   const chartData = processOrderData(orders as OrderInfo[]);
 
   const [formatedData, setFormatedData] =

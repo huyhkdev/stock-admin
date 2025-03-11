@@ -36,11 +36,12 @@ export const UserManagement = () => {
 
   const [uidSelected, setUidSelected] = useState<string>("");
   const { data: assets, isLoading: loadingAssetsUser } = useInfoAssetsUser(uidSelected);
-
+  
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const [selectedUser, setSelectedUser] = useState<UserInfo | null>(null);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [selectedFilter, setSelectedFilter] = useState<OptionType>("All");
 
   const [dataSearch, setDataSearch] = useState<UserInfo[] | undefined>();
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -189,6 +190,7 @@ export const UserManagement = () => {
   };
 
   const handleFilterUser = (value: OptionType) => {
+    setSelectedFilter(value);
     switch (value) {
       case "Active User":
         setDataSearch(users ? filterUsersByKey(users, "state", "active") : []);
@@ -228,11 +230,13 @@ export const UserManagement = () => {
 
   const handleBlockUser = () => {
     blockMutation.mutate(selectedUserIds);
+    setSelectedFilter("All");
     setDataSearch(undefined);
   };
 
   const handleUnblockUser = () => {
     unblockMutation.mutate(selectedUserIds);
+    setSelectedFilter("All");
     setDataSearch(undefined);
   };
   return (
@@ -248,7 +252,7 @@ export const UserManagement = () => {
         <Space style={{ width: "100%", justifyContent: "space-between" }}>
           <Space>
             <Select
-              defaultValue="All"
+              value={selectedFilter}
               style={{ width: "10rem" }}
               onChange={(value: OptionType) => handleFilterUser(value)}
             >
@@ -312,7 +316,7 @@ export const UserManagement = () => {
             showTotal: (total: number) => `Total ${total} items`,
           }}
         />
-        {(selectedUser && assets) && (
+        {(selectedUser && assets && !loadingAssetsUser) && (
           <CustomModal
             title={`Portfolio of ${selectedUser.fullName}`}
             isModalOpen={isModalOpen}

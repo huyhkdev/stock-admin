@@ -27,6 +27,15 @@ export const filterOrdersByKey = (
 ): OrderInfo[] => {
 
   return orders ? orders.filter(order => {
+    
+    if (key === "id" && value) {
+      const formattedId = `O${order.id.toString().padStart(5, "0")}`;
+      if (fuzzySearch && typeof value === "string") {
+        return formattedId.toLowerCase().includes(value.toLowerCase());
+      }
+      return formattedId === value;
+    }
+
     const orderValue = order[key];
 
     if (fuzzySearch && typeof orderValue === 'string' && typeof value === 'string') {

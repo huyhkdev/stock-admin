@@ -4,8 +4,11 @@ import { SearchProps } from "antd/es/input";
 import { filterType } from "./constants";
 import { OrderInfo } from "../../../apis/orders.api";
 import moment from "moment";
+import { useEffect, useState } from "react";
+import { filterOrdersByKey } from "../../../utils/filterDataByProperties";
 
 const { Option } = Select;
+
 type Props = {
   data: OrderInfo[];
   loading: boolean;
@@ -13,6 +16,43 @@ type Props = {
 
 const ListComponent: React.FC<Props> = (props) => {
   const { data, loading } = props;
+  const [filteredData, setFilteredData] = useState<OrderInfo[]>(data);
+  const [filterOption, setFilterOption] = useState<string>("All");
+  useEffect(() => {
+    if(!loading) {
+      setFilteredData(data);
+    }
+  }, [data, loading])
+  
+  const handleFilterChange = (value: string) => {
+    setFilterOption(value);
+    let filteredOrders: OrderInfo[] = [];
+
+    switch (value) {
+      case "Today":
+        filteredOrders = data.filter(order =>
+          moment(order.createdAt).isSame(moment(), "day")
+        );
+        break;
+      case "This Week":
+        filteredOrders = data.filter(order =>
+          moment(order.createdAt).isSame(moment(), "week")
+        );
+        break;
+      case "This Month":
+        filteredOrders = data.filter(order =>
+          moment(order.createdAt).isSame(moment(), "month")
+        );
+        break;
+      case "All":
+        filteredOrders = data;
+        break;
+      default:
+        filteredOrders = data;
+    }
+    
+    setFilteredData(filteredOrders);
+  };
 
   const columns: ColumnsType<OrderInfo> = [
     {
@@ -139,8 +179,9 @@ const ListComponent: React.FC<Props> = (props) => {
         moment(updatedAt).format("YYYY-MM-DD HH:mm:ss"),
     },
   ];
-  const onSearch: SearchProps["onSearch"] = (value: string, _e, info) =>
-    console.log(info?.source, value);
+
+  const onSearch: SearchProps["onSearch"] = (value: string) =>
+    setFilteredData(data ? filterOrdersByKey(data, "id", value, true) : []);
 
   return (
     <div
@@ -172,7 +213,11 @@ const ListComponent: React.FC<Props> = (props) => {
         }}
       >
         <Space>
-          <Select defaultValue="Today" style={{ width: "10rem" }}>
+          <Select
+            value={filterOption}
+            onChange={handleFilterChange}
+            style={{ width: "10rem" }}
+          >
             {filterType.map((type) => (
               <Option key={type} value={type}>
                 {type}
@@ -187,7 +232,7 @@ const ListComponent: React.FC<Props> = (props) => {
         </Space>
 
         <div>
-          <span>Total: {data.length.toLocaleString()} and showing </span>
+          <span>Total: {filteredData?.length.toLocaleString()} and showing </span>
           <Input
             style={{ width: 50, textAlign: "center", margin: "0 8px" }}
             defaultValue={10}
@@ -197,9 +242,9 @@ const ListComponent: React.FC<Props> = (props) => {
       </Space>
 
       <Table
-      loading={loading}
+        loading={loading}
         columns={columns}
-        dataSource={data}
+        dataSource={filteredData}
         bordered
         size="small"
         className="custom-table"
@@ -207,4 +252,5 @@ const ListComponent: React.FC<Props> = (props) => {
     </div>
   );
 };
+
 export default ListComponent;

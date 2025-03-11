@@ -25,16 +25,19 @@ export const OrderManagement = () => {
           : "#2196f3",
     };
   });
-
+  const genKeyOrder = (id: string) => {
+    return `O${id.toString().padStart(5, "0")}`
+  }
   const dataOrderList: OrderInfo[] = orders
     ? orders?.map((order) => {
         return {
           ...order,
-          id: `O${order.id.toString().padStart(5, "0")}`,
+          id: genKeyOrder(order.id),
+          key: genKeyOrder(order.id),
         };
       })
     : [];
-
+      
   return (
     <Space direction="vertical" size="middle" style={{ display: "flex" }}>
       <h1 style={{ fontSize: 24, fontWeight: 600 }}>Order Management</h1>

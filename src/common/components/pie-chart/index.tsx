@@ -1,61 +1,18 @@
-// import React, { PureComponent } from 'react';
-// import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from 'recharts';
-
-
-// const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-
-// const RADIAN = Math.PI / 180;
-// const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }: { cx: number, cy: number, midAngle: number, innerRadius: number, outerRadius: number, percent: number, index: number }) => {
-//     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-//     const x = cx + radius * Math.cos(-midAngle * RADIAN);
-//     const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-//     return (
-//         <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-//             {`${(percent * 100).toFixed(0)}%`}
-//         </text>
-//     );
-// };
-
-// const PieChartComponent = () => {
-//     return (
-//         <div style={{ width: '100%', height: 300 }}>
-//             <ResponsiveContainer >
-//                 <PieChart width={400} height={400}>
-//                     <Pie
-//                         data={data}
-//                         cx="50%"
-//                         cy="50%"
-//                         labelLine={false}
-//                         label={renderCustomizedLabel}
-//                         outerRadius={80}
-//                         fill="#8884d8"
-//                         dataKey="value"
-//                     >
-//                         {data.map((entry, index) => (
-//                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-//                         ))}
-//                     </Pie>
-//                 </PieChart>
-//             </ResponsiveContainer>
-//         </div>
-//     );
-// }
-// export default PieChartComponent;
-
 import React, { useEffect, useRef } from "react";
 import * as echarts from "echarts";
 
 export interface PieChartData {
     name: string;
     value: number;
+    color?: string;
 }
 
 export interface PieChartProps {
     data: PieChartData[];
+    colors?: string[];
 }
 
-const PieChart: React.FC<PieChartProps> = ({ data }) => {
+const PieChart: React.FC<PieChartProps> = ({ data, colors }) => {
     const chartRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -64,14 +21,13 @@ const PieChart: React.FC<PieChartProps> = ({ data }) => {
 
             const options = {
                 tooltip: {
-                    trigger: "item" as "item"
+                    trigger: "item"
                 },
                 legend: {
-                    orient: "horizontal", // display legends in a row
-                    top: "0",            // position at the very top
-                    left: "left",      // center horizontally
-                    itemGap: 20,         // gap between legend items
-                    // Optionally, you can adjust itemWidth and itemHeight
+                    orient: "horizontal",
+                    top: "0",           
+                    left: "left",     
+                    itemGap: 20,        
                     itemWidth: 15,
                     itemHeight: 10,
                 },
@@ -80,7 +36,12 @@ const PieChart: React.FC<PieChartProps> = ({ data }) => {
                         name: "Data",
                         type: "pie",
                         radius: "50%",
-                        data: data,
+                        data: data.map((item, index) => ({
+                            ...item,
+                            itemStyle: {
+                                color: colors ? colors[index % colors.length] : item.color
+                            }
+                        })),
                         emphasis: {
                             itemStyle: {
                                 shadowBlur: 10,
@@ -104,7 +65,7 @@ const PieChart: React.FC<PieChartProps> = ({ data }) => {
                 chartInstance.dispose();
             };
         }
-    }, [data]);
+    }, [data, colors]);
 
     return <div ref={chartRef} style={{ width: "100%", height: "400px" }} />;
 };

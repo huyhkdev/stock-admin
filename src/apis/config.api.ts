@@ -31,6 +31,14 @@ class ConfigService {
   get getAuthUrl(): string {
     return this._getEnv("VITE_AUTHEN_API_URL");
   }
+
+  get getTradeUrl(): string {
+    return this._getEnv("VITE_TRADE_API_URL");
+  }
+
+  get getStockUrl(): string {
+    return this._getEnv("VITE_STOCK_API_URL");
+  }
 }
 const config = new ConfigService();
 export default config;

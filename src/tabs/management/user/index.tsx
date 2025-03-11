@@ -3,13 +3,13 @@ import {
   Table,
   Button,
   Select,
-  Input,
   Space,
   Tag,
   Avatar,
   Checkbox,
   CheckboxChangeEvent,
   Flex,
+  message,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { SearchProps } from "./type";
@@ -17,20 +17,39 @@ import "./style.pcss";
 import { UserDetailContent, UserStatisticComponent } from "./components";
 import { UserOutlined } from "@ant-design/icons";
 import Search from "antd/es/input/Search";
-import { tickers } from "./sampleData";
 import { filterType } from "./constants";
 import CustomModal from "../../../common/components/custom-modal";
-import { getAllInfoUsers, UserInfo } from "../../../apis/users.api";
-import { useQuery } from "@tanstack/react-query";
+import { UserInfo } from "../../../apis/users.api";
 import moment from "moment";
+import { useInfoAssetsUser, useInfoUsers } from "../../../hook/useInfoUsers";
+import { blockUsers, unblockUsers } from "../../../apis/auth.api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { filterUsersByKey } from "../../../utils";
 
 const { Option } = Select;
 
+type OptionType = "All" | "Active User" | "Inactive User" | "Banned User";
+
 export const UserManagement = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const { data: users, isLoading } = useInfoUsers();
+
+  const [uidSelected, setUidSelected] = useState<string>("");
+  const { data: assets, isLoading: loadingAssetsUser } = useInfoAssetsUser(uidSelected);
+  
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
   const [selectedUser, setSelectedUser] = useState<UserInfo | null>(null);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [selectedFilter, setSelectedFilter] = useState<OptionType>("All");
+
+  const [dataSearch, setDataSearch] = useState<UserInfo[] | undefined>();
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(5);
+
   const showModal = (record: UserInfo) => {
     setSelectedUser(record);
+    setUidSelected(record.id);
     setIsModalOpen(true);
   };
 
@@ -38,7 +57,7 @@ export const UserManagement = () => {
     setIsModalOpen(false);
     setSelectedUser(null);
   };
-  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+
   const handleCheckboxChange = (e: CheckboxChangeEvent, userId: string) => {
     if (e.target.checked) {
       setSelectedUserIds((prev) => [...prev, userId]);
@@ -46,6 +65,7 @@ export const UserManagement = () => {
       setSelectedUserIds((prev) => prev.filter((id) => id !== userId));
     }
   };
+
   const columns: ColumnsType<UserInfo> = [
     {
       title: "",
@@ -62,8 +82,8 @@ export const UserManagement = () => {
     },
     {
       title: "Name",
-      dataIndex: "fullname",
-      key: "fullname",
+      dataIndex: "fullName",
+      key: "fullName",
       onCell: (record: UserInfo) => ({
         onClick: () => showModal(record),
       }),
@@ -85,6 +105,9 @@ export const UserManagement = () => {
       title: "Role",
       dataIndex: "role",
       key: "role",
+      render: (role: string) => (
+        <b style={{ color: role === "blocker" ? "red" : "inherit" }}>{role}</b>
+      ),
     },
     {
       title: "CIC",
@@ -115,16 +138,10 @@ export const UserManagement = () => {
         let color: string;
         switch (status) {
           case "active":
-            color = "blue";
+            color = "green";
             break;
-          case "inactive":
-            color = "red";
-            break;
-          case "Not started":
-            color = "default";
-            break;
-          case "Waiting":
-            color = "gold";
+          case "pending":
+            color = "yellow";
             break;
           default:
             color = "default";
@@ -160,14 +177,68 @@ export const UserManagement = () => {
     //     key: 'balance',
     // },
   ];
+  const handleTableChange = (pagination: {
+    current: number;
+    pageSize: number;
+  }) => {
+    setCurrentPage(pagination.current);
+    setPageSize(pagination.pageSize);
+  };
 
-  const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
-    console.log(info?.source, value);
+  const onSearch: SearchProps["onSearch"] = (value) => {
+    setDataSearch(users ? filterUsersByKey(users, "email", value, true) : []);
+  };
 
-  const { data: users, isLoading } = useQuery({
-    queryKey: ["users"],
-    queryFn: getAllInfoUsers,
+  const handleFilterUser = (value: OptionType) => {
+    setSelectedFilter(value);
+    switch (value) {
+      case "Active User":
+        setDataSearch(users ? filterUsersByKey(users, "state", "active") : []);
+        break;
+      case "Inactive User":
+        setDataSearch(users ? filterUsersByKey(users, "state", "pending") : []);
+        break;
+      case "Banned User":
+        setDataSearch(users ? filterUsersByKey(users, "role", "blocker") : []);
+        break;
+      case "All":
+      default:
+        setDataSearch(users);
+        break;
+    }
+  };
+
+  const blockMutation = useMutation({
+    mutationFn: blockUsers,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setSelectedUserIds([]);
+      message.success("Users selected has been blocked");
+    },
+    onError: () => message.error("Failed to block users"),
   });
+
+  const unblockMutation = useMutation({
+    mutationFn: unblockUsers,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setSelectedUserIds([]);
+      message.success("Users selected has been active again");
+    },
+    onError: () => message.error("Failed to unblock users"),
+  });
+
+  const handleBlockUser = () => {
+    blockMutation.mutate(selectedUserIds);
+    setSelectedFilter("All");
+    setDataSearch(undefined);
+  };
+
+  const handleUnblockUser = () => {
+    unblockMutation.mutate(selectedUserIds);
+    setSelectedFilter("All");
+    setDataSearch(undefined);
+  };
   return (
     <div>
       <Flex vertical gap={20}>
@@ -180,7 +251,11 @@ export const UserManagement = () => {
         <UserStatisticComponent />
         <Space style={{ width: "100%", justifyContent: "space-between" }}>
           <Space>
-            <Select defaultValue="All User" style={{ width: "10rem" }}>
+            <Select
+              value={selectedFilter}
+              style={{ width: "10rem" }}
+              onChange={(value: OptionType) => handleFilterUser(value)}
+            >
               {filterType.map((type) => (
                 <Option key={type} value={type}>
                   {type}
@@ -188,48 +263,70 @@ export const UserManagement = () => {
               ))}
             </Select>
             <Search
-              placeholder=" Search user"
+              placeholder=" Search email"
               prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
               style={{ width: 200 }}
               onSearch={onSearch}
             />
             {selectedUserIds.length > 0 && (
-              <Button danger type="primary">
-                Ban User
-              </Button>
+              <Space>
+                <Button
+                  danger
+                  type="primary"
+                  onClick={handleBlockUser}
+                  loading={blockMutation.isPending}
+                >
+                  Block User
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={handleUnblockUser}
+                  loading={unblockMutation.isPending}
+                >
+                  Unblock User
+                </Button>
+              </Space>
             )}
           </Space>
 
           <div>
-            <span>Total: 143,624 and showing </span>
-            <Input
-              style={{ width: 50, textAlign: "center", margin: "0 8px" }}
-              defaultValue={10}
-            />
-            <span>page</span>
+            <span>
+              Total: {users?.length.toLocaleString()} and showing {pageSize} /
+              page
+            </span>
           </div>
         </Space>
 
         <Table
           rowKey={(record) => record.id}
           columns={columns}
-          dataSource={users}
+          dataSource={dataSearch ? dataSearch : users}
           bordered
           size="small"
           className="custom-table"
           loading={isLoading}
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: dataSearch ? dataSearch.length : users?.length,
+            onChange: (page, pageSize) =>
+              handleTableChange({ current: page, pageSize }),
+            showSizeChanger: true,
+            pageSizeOptions: ["5", "10", "15", "20"],
+            showTotal: (total: number) => `Total ${total} items`,
+          }}
         />
-        {selectedUser && (
+        {(selectedUser && assets && !loadingAssetsUser) && (
           <CustomModal
-            title={`Portfolio of user ${selectedUser.fullname}`}
+            title={`Portfolio of ${selectedUser.fullName}`}
             isModalOpen={isModalOpen}
             handleCancel={handleCancel}
             width={800}
             child={
               <UserDetailContent
-                tickers={tickers.filter(
-                  (ticker) => ticker.uid === selectedUser.id
-                )}
+                isLoading={loadingAssetsUser}
+                uid={selectedUser.id}
+                assets={assets}
               />
             }
           />

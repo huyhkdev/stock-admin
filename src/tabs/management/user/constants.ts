@@ -1,3 +1,3 @@
 export const filterType = [
-    "All User", "Active User", "Inactive User", "Banned User"
+    "All", "Active User", "Inactive User", "Banned User"
 ];

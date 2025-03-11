@@ -22,11 +22,6 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route
-        path="/"
-        element={isLoggedIn ? <Navigate to="/users" /> : <Navigate to="/login" />}
-      />
-
       {isLoggedIn ? (
         <>
           <Route path="/users" element={<UserManagement />} />

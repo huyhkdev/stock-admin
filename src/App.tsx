@@ -21,7 +21,7 @@ const App: React.FC = () => {
           <Header toggleSidebar={toggleSidebar} />
           <Layout
             className="app-layout"
-            style={{ height: "100vh", marginTop: "64px" }}
+            style={{ height: "90vh", margin: '64px 0 0 0' }}
           >
             <AppSider key={isSidebarOpen.toString()} isSidebarOpen={isSidebarOpen} />
             <Layout>

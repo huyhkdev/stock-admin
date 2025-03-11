@@ -3,13 +3,15 @@ import config from "./config.api";
 const urls = {
     production: {
         authenURL: config.getAuthUrl,
-        tradeURL:  'http://localhost:4000/api',
+        tradeURL:  config.getTradeUrl,
         userURL: 'http://127.0.0.1:8082/profile',
+        stockURL: config.getStockUrl,
     },
     development: {
         authenURL: config.getAuthUrl,
-        tradeURL:  'http://localhost:4000/api',
+        tradeURL:  config.getTradeUrl,
         userURL: 'http://127.0.0.1:8082/profile',
+        stockURL: config.getStockUrl,
     },
 };
 

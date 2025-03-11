@@ -125,7 +125,7 @@ const ListComponent: React.FC<Props> = (props) => {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (status: string) => {
+      render: (status?: string) => {
         let color: string;
         switch (status) {
           case "pending":

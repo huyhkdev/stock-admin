@@ -26,11 +26,11 @@ export const OrderManagement = () => {
     };
   });
   const dataOrderList: OrderInfo[] = orders
-    ? orders?.map((order) => {
+    ? orders.filter(order => order !== null).map((order) => {
         return {
           ...order,
-          id: formatIdOrder(order.id, "o"),
-          key: formatIdOrder(order.id, "o"),
+          id: formatIdOrder(order?.id, "o"),
+          key: formatIdOrder(order?.id, "o"),
         };
       })
     : [];

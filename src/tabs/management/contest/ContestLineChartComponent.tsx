@@ -3,7 +3,7 @@ import LineChart from "../../../common/components/line-chart";
 import { monthContestData, yearContestData } from "./sampleData";
 import { ContestChartProps } from "./type";
 import { Select } from "antd";
-import { DAILY_DATA, MONTHLY_DATA, WEEKLY_DATA, YEARLY_DATA } from "./constants";
+import { MONTHLY_DATA, YEARLY_DATA } from "./constants";
 const { Option } = Select;
 
 const seriesData = {

@@ -19,7 +19,7 @@ const PieChart: React.FC<PieChartProps> = ({ data, colors }) => {
         if (chartRef.current) {
             const chartInstance = echarts.init(chartRef.current);
 
-            const options = {
+            const options: echarts.EChartOption = {
                 tooltip: {
                     trigger: "item"
                 },

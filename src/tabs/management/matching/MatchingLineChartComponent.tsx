@@ -1,14 +1,9 @@
 import { useEffect, useState } from "react";
 import LineChart from "../../../common/components/line-chart";
-import {
-  dayOrderData,
-  monthOrderData,
-  weekOrderData,
-  yearOrderData,
-} from "./sampleData";
 import { DatePicker, Select, Spin } from "antd";
 import {
   DAILY_DATA,
+  intervalMapping,
   MONTHLY_DATA,
   WEEKLY_DATA,
   YEARLY_DATA,
@@ -22,12 +17,6 @@ import dayjs from "dayjs";
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const seriesData = {
-  [DAILY_DATA]: dayOrderData,
-  [WEEKLY_DATA]: weekOrderData,
-  [MONTHLY_DATA]: monthOrderData,
-  [YEARLY_DATA]: yearOrderData,
-};
 interface LineMatchChartProps {
   data: OrderMatch[] | undefined;
   loading: boolean;
@@ -177,13 +166,11 @@ const LineMatchChartComponent: React.FC<LineMatchChartProps> = (props) => {
       }}
     >
       <Select
-        onChange={(value) =>
-          updateChartInterval(value as keyof typeof seriesData)
-        }
+        onChange={(value) => updateChartInterval(value)}
         style={{ width: "10rem" }}
         value={activeInterval}
       >
-        {Object.keys(seriesData).map((interval) => (
+        {Object.keys(intervalMapping).map((interval) => (
           <Option key={interval} value={interval}>
             {interval}
           </Option>

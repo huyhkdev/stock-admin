@@ -1,10 +1,10 @@
-import { Button, Dropdown, Flex, Input, MenuProps, Popover, Select, Space, Table } from "antd";
+import { Button, Dropdown, Input, MenuProps, Select, Space, Table } from "antd";
 import { contests } from "./sampleData";
 import { ColumnsType } from "antd/es/table";
 import { SearchProps } from "antd/es/input";
 import { useEffect, useState } from "react";
-import { Contest, ContestParticipant } from "./type";
-import { AuditOutlined, DeleteOutlined, EditOutlined, MinusOutlined, MoreOutlined } from '@ant-design/icons';
+import { Contest } from "./type";
+import { AuditOutlined, DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons';
 import { filterType } from "./constants";
 import CustomModal from "../../../common/components/custom-modal";
 import ContestForm from "../../../common/components/contest-form";

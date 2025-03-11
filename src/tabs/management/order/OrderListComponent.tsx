@@ -5,7 +5,7 @@ import { filterType } from "./constants";
 import { OrderInfo } from "../../../apis/orders.api";
 import moment from "moment";
 import { useEffect, useState } from "react";
-import { filterOrdersByKey } from "../../../utils/filterDataByProperties";
+import { filterOrdersByKey } from "../../../utils";
 
 const { Option } = Select;
 

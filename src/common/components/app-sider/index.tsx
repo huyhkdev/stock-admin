@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons";
 import { StyledSider } from "./style";
 import { Link, useLocation } from "react-router-dom";
-import { onScrollToTop } from "../../../utils/scroll";
+import { onScrollToTop } from "../../../utils";
 
 const menuItems = [
   {

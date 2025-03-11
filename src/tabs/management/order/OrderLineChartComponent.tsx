@@ -1,44 +1,26 @@
 import { useEffect, useState } from "react";
 import LineChart from "../../../common/components/line-chart";
-import {
-  dayOrderData,
-  monthOrderData,
-  weekOrderData,
-  yearOrderData,
-} from "./sampleData";
-import { OrderLineChartProps, SeriesData } from "./type";
+import { IntervalType, OrderLineChartProps, SeriesData } from "./type";
 import { Select, Spin, DatePicker } from "antd";
-import {
-  DAILY_DATA,
-  MONTHLY_DATA,
-  WEEKLY_DATA,
-  YEARLY_DATA,
-} from "./constants";
-import { useInfoOrders } from "../../../hook/useInfoOrders";
+import { DAILY_DATA, intervalMapping } from "./constants";
 import { OrderInfo } from "../../../apis/orders.api";
 import { ApexOptions } from "apexcharts";
-import moment from "moment";
+import dayjs from "dayjs";
+import { filterOrdersByInterval } from "../../../utils";
+
+interface LineChartProps {
+  data: OrderInfo[] | undefined;
+  isLoading: boolean;
+}
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const seriesData = {
-  [DAILY_DATA]: dayOrderData,
-  [WEEKLY_DATA]: weekOrderData,
-  [MONTHLY_DATA]: monthOrderData,
-  [YEARLY_DATA]: yearOrderData,
-};
-
-type IntervalType =
-  | typeof DAILY_DATA
-  | typeof WEEKLY_DATA
-  | typeof MONTHLY_DATA
-  | typeof YEARLY_DATA;
-
-const LineStatusChartComponent = () => {
-  const { data: orders, isLoading } = useInfoOrders();
-
-  const [dateFilter, setDateFilter] = useState([null, null]);
+const LineStatusChartComponent: React.FC<LineChartProps> = (props) => {
+  const { data: orders, isLoading } = props;
+  const [dateFilter, setDateFilter] = useState<
+    [moment.Moment, moment.Moment] | null
+  >(null);
 
   const [activeInterval, setActiveInterval] =
     useState<IntervalType>(DAILY_DATA);
@@ -47,60 +29,11 @@ const LineStatusChartComponent = () => {
     setDateFilter(dates);
   };
 
-  const filterOrdersByInterval = (
-    orders: OrderInfo[],
-    interval: IntervalType
-  ) => {
-    let filteredOrders = orders;
-    console.log(
-      filteredOrders?.filter((order) => {
-        const orderDate = moment(order.createdAt).format("YYYY-MM");
-        return orderDate === moment().format("YYYY-MM");
-      })
-    );
-    if (dateFilter[0] && dateFilter[1]) {
-      filteredOrders = orders.filter((order) => {
-        const orderDate = moment(order.createdAt);
-        return orderDate.isBetween(dateFilter[0], dateFilter[1], null, "[]");
-      });
-    }
-    switch (interval) {
-      case DAILY_DATA:
-        return filteredOrders?.filter((order) => {
-          const orderDate = moment(order.createdAt).format("YYYY-MM-DD");
-          return orderDate === moment().format("YYYY-MM-DD");
-        });
-      case WEEKLY_DATA:
-        return filteredOrders?.filter((order) => {
-          const orderDate = moment(order.createdAt).format("YYYY-WW");
-          return orderDate === moment().format("YYYY-WW");
-        });
-      case MONTHLY_DATA:
-        return filteredOrders?.filter((order) => {
-          const orderDate = moment(order.createdAt).format("YYYY-MM");
-          return orderDate === moment().format("YYYY-MM");
-        });
-      case YEARLY_DATA:
-        return filteredOrders?.filter((order) => {
-          const orderDate = moment(order.createdAt).format("YYYY");
-          return orderDate === moment().format("YYYY");
-        });
-      default:
-        return filteredOrders;
-    }
-  };
-
   const processOrderData = (
     orders: OrderInfo[],
     interval: IntervalType
   ): OrderLineChartProps => {
-    let filteredOrders = filterOrdersByInterval(orders, interval);
-    if (dateFilter[0] && dateFilter[1]) {
-      filteredOrders = orders.filter((order) => {
-        const orderDate = moment(order.createdAt);
-        return orderDate.isBetween(dateFilter[0], dateFilter[1], null, "[]");
-      });
-    }
+    let filteredOrders = filterOrdersByInterval(orders, interval, dateFilter);
 
     const dates = filteredOrders?.map((order) =>
       new Date(order.createdAt).toISOString()
@@ -194,17 +127,21 @@ const LineStatusChartComponent = () => {
 
     return { series, options };
   };
-  const [formatedData, setFormatedData] = useState<OrderLineChartProps>(processOrderData(orders as OrderInfo[], activeInterval));
-  const updateChartInterval = (interval: keyof typeof seriesData) => {
+
+  const [formatedData, setFormatedData] = useState<OrderLineChartProps>(
+    processOrderData(orders as OrderInfo[], activeInterval)
+  );
+
+  const updateChartInterval = (interval: IntervalType) => {
     setActiveInterval(interval);
     setFormatedData(processOrderData(orders as OrderInfo[], interval));
   };
 
   useEffect(() => {
-    if(!isLoading) {
+    if (!isLoading) {
       setFormatedData(processOrderData(orders as OrderInfo[], activeInterval));
     }
-  },[isLoading])
+  }, [isLoading, dateFilter]);
 
   return (
     <div
@@ -216,21 +153,23 @@ const LineStatusChartComponent = () => {
       }}
     >
       <Select
-        onChange={(value) =>
-          updateChartInterval(value as keyof typeof seriesData)
-        }
+        onChange={(value) => updateChartInterval(value)}
         style={{ width: "10rem" }}
         value={activeInterval}
       >
-        {Object.keys(seriesData).map((interval) => (
+        {Object.keys(intervalMapping).map((interval) => (
           <Option key={interval} value={interval}>
             {interval}
           </Option>
         ))}
       </Select>
-
-      <RangePicker onChange={handleDateChange} style={{ marginLeft: 10 }} />
-
+      <RangePicker
+        onChange={handleDateChange}
+        style={{ marginLeft: 10 }}
+        disabledDate={(current) =>
+          current && current.isAfter(dayjs().endOf("day"), "day")
+        }
+      />
       <Spin spinning={isLoading}>
         {!isLoading && (
           <LineChart key={activeInterval} formatedData={formatedData} />

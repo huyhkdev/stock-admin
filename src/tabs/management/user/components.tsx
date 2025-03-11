@@ -10,10 +10,9 @@ import "./components.pcss";
 import type { ColumnsType } from "antd/es/table";
 import StatisticCard from "../../../common/components/statistic-card";
 import { useInfoAllAssetsUser, useInfoUsers } from "../../../hook/useInfoUsers";
-import { filterUsersByKey } from "../../../utils/filterDataByProperties";
 import { Portfolio } from "../../../apis/users.api";
 import moment from "moment";
-import { calculateTotalAssets } from "../../../utils/calculateTotalAssets";
+import { calculateTotalAssets, filterUsersByKey } from "../../../utils";
 
 export const UserStatisticComponent: React.FC = () => {
   const { data: users, isLoading } = useInfoUsers();

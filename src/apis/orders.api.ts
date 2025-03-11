@@ -25,7 +25,23 @@ export interface OrderInfo {
   updatedAt: Date;
 }
 
+export interface OrderMatch {
+  id: string;
+  orderBuyId: string;
+  orderSellId: string;
+  incomingOrderId: string;
+  amount: number;
+  price: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export const getAllInfoOrders = async (): Promise<OrderInfo[]> => {
   const response = await api.get(`${appUrls.tradeURL}/admin/open-order`);
+  return response.data.data;
+};
+
+export const getAllInfoOrdersMatch = async (): Promise<OrderMatch[]> => {
+  const response = await api.get(`${appUrls.tradeURL}/admin/match-histories`);
   return response.data.data;
 };

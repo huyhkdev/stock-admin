@@ -1,5 +1,6 @@
 import { ApexOptions } from "apexcharts";
 import { OrderStatusType } from "../../../apis/orders.api";
+import { DAILY_DATA, MONTHLY_DATA, WEEKLY_DATA, YEARLY_DATA } from "./constants";
 
 export interface Order {
   id: string;
@@ -29,3 +30,9 @@ export interface OrderPieChartProps {
     value: number;
   }[];
 }
+
+export type IntervalType =
+  | typeof DAILY_DATA
+  | typeof WEEKLY_DATA
+  | typeof MONTHLY_DATA
+  | typeof YEARLY_DATA;

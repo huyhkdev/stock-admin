@@ -22,9 +22,9 @@ import CustomModal from "../../../common/components/custom-modal";
 import { UserInfo } from "../../../apis/users.api";
 import moment from "moment";
 import { useInfoAssetsUser, useInfoUsers } from "../../../hook/useInfoUsers";
-import { filterUsersByKey } from "../../../utils/filterDataByProperties";
 import { blockUsers, unblockUsers } from "../../../apis/auth.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { filterUsersByKey } from "../../../utils";
 
 const { Option } = Select;
 

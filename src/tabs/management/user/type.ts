@@ -1,4 +1,4 @@
-import { Portfolio } from "../../../apis/users.api";
+import { Assets } from "../../../apis/users.api";
 
 export interface StatisticCardProps {
   icon: React.ReactNode;
@@ -7,8 +7,9 @@ export interface StatisticCardProps {
 }
 
 export interface UserDetailContentProps {
-  data: Portfolio[];
+  assets: Assets;
   isLoading: boolean;
+  uid: string;
 }
 export interface SearchProps {
   onSearch: (

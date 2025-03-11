@@ -325,9 +325,8 @@ export const UserManagement = () => {
             child={
               <UserDetailContent
                 isLoading={loadingAssetsUser}
-                data={assets?.portfolios?.filter(
-                  (ticker) => ticker.uid === selectedUser.id
-                )}
+                uid={selectedUser.id}
+                assets={assets}
               />
             }
           />

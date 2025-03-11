@@ -5,11 +5,13 @@ const urls = {
         authenURL: config.getAuthUrl,
         tradeURL:  config.getTradeUrl,
         userURL: 'http://127.0.0.1:8082/profile',
+        stockURL: config.getStockUrl,
     },
     development: {
         authenURL: config.getAuthUrl,
         tradeURL:  config.getTradeUrl,
         userURL: 'http://127.0.0.1:8082/profile',
+        stockURL: config.getStockUrl,
     },
 };
 

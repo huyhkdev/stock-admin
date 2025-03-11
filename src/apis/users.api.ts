@@ -45,3 +45,8 @@ export const getUserAssets = async (uid: string): Promise<Assets> => {
   const response = await api.get(`${appUrls.tradeURL}/admin/assets/${uid}`);
   return response.data.data;
 };
+
+export const getAllUserAssets = async (): Promise<Assets> => {
+  const response = await api.get(`${appUrls.tradeURL}/admin/assets`);
+  return response.data.data;
+};

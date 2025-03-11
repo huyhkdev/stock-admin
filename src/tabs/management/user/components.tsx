@@ -1,5 +1,5 @@
-import React from "react";
-import { Row, Col, Table } from "antd";
+import React, { useEffect, useState } from "react";
+import { Row, Col, Table, Statistic, Card } from "antd";
 import {
   UserOutlined,
   TrademarkOutlined,
@@ -9,26 +9,36 @@ import { UserDetailContentProps } from "./type";
 import "./components.pcss";
 import type { ColumnsType } from "antd/es/table";
 import StatisticCard from "../../../common/components/statistic-card";
-import { useInfoUsers } from "../../../hook/useInfoUsers";
+import { useInfoAllAssetsUser, useInfoUsers } from "../../../hook/useInfoUsers";
 import { filterUsersByKey } from "../../../utils/filterDataByProperties";
 import { Portfolio } from "../../../apis/users.api";
 import moment from "moment";
+import { calculateTotalAssets } from "../../../utils/calculateTotalAssets";
 
 export const UserStatisticComponent: React.FC = () => {
   const { data: users, isLoading } = useInfoUsers();
+  const { data: allAssetsUser, isLoading: loadingAllAssets } =
+    useInfoAllAssetsUser();
   const totalUsers = users ? users.length.toLocaleString() : 0;
   const totalUsersActive = users
     ? filterUsersByKey(users, "state", "active").length.toLocaleString()
     : 0;
+  console.log(allAssetsUser);
 
+  const totalUsersWithTickers =
+    !loadingAllAssets && allAssetsUser
+      ? new Set(
+          allAssetsUser.portfolios.map((asset) => asset.uid)
+        ).size.toLocaleString()
+      : 0;
   return (
-    <Row gutter={16} className="card-container">
+    <Row gutter={[16, 16]} className="card-container">
       <Col span={8}>
         <StatisticCard
           icon={<UserOutlined />}
           value={totalUsers}
           loading={isLoading}
-          label="users in system"
+          label="Users in System"
         />
       </Col>
       <Col span={8}>
@@ -36,15 +46,15 @@ export const UserStatisticComponent: React.FC = () => {
           icon={<FireOutlined style={{ color: "red" }} />}
           value={totalUsersActive}
           loading={isLoading}
-          label="users in active"
+          label="Active Users"
         />
       </Col>
       <Col span={8}>
         <StatisticCard
           icon={<TrademarkOutlined style={{ color: "green" }} />}
-          value="12,454"
+          value={totalUsersWithTickers}
           loading={isLoading}
-          label="users has at least 1 ticker"
+          label="Users with Tickers"
         />
       </Col>
     </Row>
@@ -52,10 +62,22 @@ export const UserStatisticComponent: React.FC = () => {
 };
 
 export const UserDetailContent: React.FC<UserDetailContentProps> = ({
-  data,
+  assets,
   isLoading,
+  uid,
 }) => {
+  const [totalAssets, setTotalAssets] = useState<number>();
+  const data = assets?.portfolios?.filter((ticker) => ticker.uid === uid);
   const dataWithKey = data?.map((item) => ({ ...item, key: item.id }));
+
+  const fetchTotalAssets = async () => {
+    const totalAssets = await calculateTotalAssets(assets.portfolios);
+    setTotalAssets(totalAssets);
+  };
+
+  useEffect(() => {
+    fetchTotalAssets();
+  }, []);
 
   const columns: ColumnsType<Portfolio> = [
     {
@@ -87,8 +109,32 @@ export const UserDetailContent: React.FC<UserDetailContentProps> = ({
         moment(updatedAt).format("YYYY-MM-DD HH:mm:ss"),
     },
   ];
+
   return (
     <div>
+      <Row gutter={[16, 16]} className="wallet-info-row">
+        <Col span={12}>
+          <Card>
+            <Statistic
+              loading={isLoading}
+              title="Total Assets"
+              value={totalAssets}
+              prefix="₫"
+            />
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card>
+            <Statistic
+              loading={isLoading}
+              title="Available Balance"
+              value={assets.wallet[0]?.balance}
+              prefix="₫"
+            />
+          </Card>
+        </Col>
+      </Row>
+      <br></br>
       <Table
         loading={isLoading}
         columns={columns}
@@ -96,6 +142,8 @@ export const UserDetailContent: React.FC<UserDetailContentProps> = ({
         bordered
         size="small"
         className="custom-table-ticker"
+        rowClassName="table-row-hover"
+        pagination={false}
       />
     </div>
   );

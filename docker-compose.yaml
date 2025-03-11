@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - VITE_NODE_ENV=production
+      - VITE_CONTEXT_PATH=/api
+      - VITE_HOST=localhost
+      - VITE_AUTHEN_API_URL=https://furecods.site/api/auth
+      - VITE_TRADE_API_URL=https://furecods.site/api/order
+      - VITE_STOCK_API_URL=https://furecods.site/api/data
+    restart: unless-stopped

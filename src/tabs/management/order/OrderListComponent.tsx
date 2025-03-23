@@ -6,7 +6,21 @@ import { OrderInfo } from "../../../apis/orders.api";
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { filterOrdersByKey } from "../../../utils";
+import styled from 'styled-components';
 
+ const StyledTableOrder = styled.div`
+  .ant-table-cell {
+    font-size: 0.8rem; /* Thay đổi giá trị theo ý bạn */
+  }
+
+  .clickable-row {
+    cursor: pointer;
+  }
+
+  .ant-table {
+    min-height: 17rem;
+  }
+`;
 const { Option } = Select;
 
 type Props = {
@@ -240,15 +254,17 @@ const ListComponent: React.FC<Props> = (props) => {
           <span>page</span>
         </div>
       </Space>
-
-      <Table
-        loading={loading}
-        columns={columns}
-        dataSource={filteredData}
-        bordered
-        size="small"
-        className="custom-table"
-      />
+      <StyledTableOrder>
+        <Table
+          loading={loading}
+          columns={columns}
+          dataSource={filteredData}
+          bordered
+          size="small"
+          className="custom-table"
+        />
+      </StyledTableOrder>
+      
     </div>
   );
 };

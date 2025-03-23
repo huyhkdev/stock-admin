@@ -1,21 +1,16 @@
-export interface Contest {
-    contestId: string;
-    contestName: string;
-    startDateTime: Date;
-    endDateTime: Date;
-}
+import { Contest, ContestParticipant, TopUser } from "../../../apis/contests.api";
 
-export interface ContestParticipant {
-    contestId: string,
-    userName: string,
-    initialBalance: number,
-    finalBalance: number,
-}
 export interface ContestDetailProps {
-    contest: Contest | null;
+    contests: Contest[];
+    loading: boolean;
 }
 export interface ParticipantListComponentProps {
     participants: ContestParticipant[];
+    loading: boolean;
+}
+export interface RankListComponentProps {
+    topUsers: TopUser[];
+    loading: boolean;
 }
 
 export interface ContestChartProps {
@@ -33,9 +28,9 @@ export interface ContestChartProps {
         markers: {
             size: number;
         },
-        colors: string[],
+        colors: string[];
         fill: {
-            type: "datetime" | "category" | "numeric" | undefined;
+            type: "gradient";
             gradient: {
                 shadeIntensity: number;
                 opacityFrom: number;
@@ -51,7 +46,7 @@ export interface ContestChartProps {
             width: number;
         },
         xaxis: {
-            type: string;
+            type: "datetime" | "category" | "numeric" | undefined; // ✅ Đúng kiểu dữ liệu của ApexCharts
             categories: string[];
         },
         tooltip: {

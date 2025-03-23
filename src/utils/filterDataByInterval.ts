@@ -7,6 +7,7 @@ import {
   YEARLY_DATA,
 } from "../tabs/management/order/constants";
 import { IntervalType } from "../tabs/management/order/type";
+import { Contest } from "../apis/contests.api";
 
 export const filterOrdersByInterval = (
   orders: OrderInfo[],
@@ -90,4 +91,26 @@ export const filterOrdersMatchByInterval = (
     default:
       return filteredOrders;
   }
+};
+export const filterContestByInterval = (data: Contest[], activeInterval: string) => {
+  const countByInterval: Record<string, number> = {};
+  data.forEach((item) => {
+      if (!item.startDateTime) return; 
+      const dateObj = new Date(item.startDateTime); 
+      if (isNaN(dateObj.getTime())) return; 
+      let key: string;
+      if (activeInterval === MONTHLY_DATA) {
+          key = `${dateObj.getFullYear()}-${(dateObj.getMonth() + 1).toString().padStart(2, '0')}`;
+      } else if (activeInterval === YEARLY_DATA) {
+          key = dateObj.getFullYear().toString(); 
+      } else {
+          return;
+      }
+      countByInterval[key] = (countByInterval[key] || 0) + 1;
+  });
+
+  return {
+      categories: Object.keys(countByInterval),
+      data: Object.values(countByInterval),
+  };
 };

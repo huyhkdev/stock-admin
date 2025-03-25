@@ -13,7 +13,6 @@ import {
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import type { SearchProps } from "./type";
-import "./style.pcss";
 import { UserDetailContent, UserStatisticComponent } from "./components";
 import { UserOutlined } from "@ant-design/icons";
 import Search from "antd/es/input/Search";
@@ -25,6 +24,7 @@ import { useInfoAssetsUser, useInfoUsers } from "../../../hook/useInfoUsers";
 import { blockUsers, unblockUsers } from "../../../apis/auth.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { filterUsersByKey } from "../../../utils";
+import { StyledTable } from "./style";
 
 const { Option } = Select;
 
@@ -296,26 +296,28 @@ export const UserManagement = () => {
             </span>
           </div>
         </Space>
-
-        <Table
-          rowKey={(record) => record.id}
-          columns={columns}
-          dataSource={dataSearch ? dataSearch : users}
-          bordered
-          size="small"
-          className="custom-table"
-          loading={isLoading}
-          pagination={{
-            current: currentPage,
-            pageSize: pageSize,
-            total: dataSearch ? dataSearch.length : users?.length,
-            onChange: (page, pageSize) =>
-              handleTableChange({ current: page, pageSize }),
-            showSizeChanger: true,
-            pageSizeOptions: ["5", "10", "15", "20"],
-            showTotal: (total: number) => `Total ${total} items`,
-          }}
-        />
+        <StyledTable>
+          <Table
+            rowKey={(record) => record.id}
+            columns={columns}
+            dataSource={dataSearch ? dataSearch : users}
+            bordered
+            size="small"
+            className="custom-table"
+            loading={isLoading}
+            pagination={{
+              current: currentPage,
+              pageSize: pageSize,
+              total: dataSearch ? dataSearch.length : users?.length,
+              onChange: (page, pageSize) =>
+                handleTableChange({ current: page, pageSize }),
+              showSizeChanger: true,
+              pageSizeOptions: ["5", "10", "15", "20"],
+              showTotal: (total: number) => `Total ${total} items`,
+            }}
+          />
+        </StyledTable>
+       
         {(selectedUser && assets && !loadingAssetsUser) && (
           <CustomModal
             title={`Portfolio of ${selectedUser.fullName}`}

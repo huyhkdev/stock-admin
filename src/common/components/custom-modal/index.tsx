@@ -1,5 +1,7 @@
 import { Modal } from "antd";
 import styled from "styled-components";
+import { useState, useEffect } from "react";
+import "./style.pcss";
 
 const StyledCustomModal = styled.div`
 .custom-modal-title {
@@ -9,6 +11,7 @@ const StyledCustomModal = styled.div`
 }
     
 `;
+
 interface CustomModalProps {
     width: number | null;
     title: string;
@@ -18,6 +21,22 @@ interface CustomModalProps {
 }
 
 const CustomModal = ({ title, isModalOpen, handleCancel, child, width }: CustomModalProps) => {
+    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+
+    // Handle resizing events
+    useEffect(() => {
+        const handleResize = () => setScreenWidth(window.innerWidth);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // Responsive width logic
+    const responsiveWidth = width ?? (screenWidth >= 1600 ? '40%' :
+        screenWidth >= 1200 ? '50%' :
+        screenWidth >= 992 ? '60%' :
+        screenWidth >= 768 ? '70%' :
+        screenWidth >= 576 ? '80%' : '90%');
+
     return (
         <StyledCustomModal>
             <Modal
@@ -43,4 +62,5 @@ const CustomModal = ({ title, isModalOpen, handleCancel, child, width }: CustomM
 
     )
 }
+
 export default CustomModal;

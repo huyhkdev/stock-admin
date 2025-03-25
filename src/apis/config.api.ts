@@ -20,9 +20,6 @@ class ConfigService {
     return this._getEnv("VITE_CONTEXT_PATH");
   }
 
-  get portServer(): number {
-    return Number.parseInt(this._getEnv("VITE_PORT"));
-  }
 
   get hostServer(): string {
     return this._getEnv("VITE_HOST");

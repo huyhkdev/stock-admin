@@ -29,7 +29,8 @@ export const filterOrdersByKey = (
 ): OrderInfo[] => {
 
   return orders ? orders.filter(order => {
-    
+    if (!order) return false;
+
     if (key === "id" && value) {
       const formattedId = formatIdOrder(order.id, "o");
       if (fuzzySearch && typeof value === "string") {
@@ -37,7 +38,7 @@ export const filterOrdersByKey = (
       }
       return formattedId === value;
     }
-
+    
     const orderValue = order[key];
 
     if (fuzzySearch && typeof orderValue === 'string' && typeof value === 'string') {

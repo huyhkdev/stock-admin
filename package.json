@@ -10,9 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ant-design/charts": "^2.2.6",
-    "@cloudinary/react": "^1.13.1",
-    "@cloudinary/url-gen": "^1.21.0",
     "@tanstack/react-query": "^5.62.11",
     "@types/styled-components": "^5.1.34",
     "antd": "^5.22.6",
@@ -20,7 +17,6 @@
     "axios": "^1.7.9",
     "echarts": "^5.6.0",
     "jodit-react": "^4.1.2",
-    "lightweight-charts": "^4.2.2",
     "moment": "^2.30.1",
     "react": "^18.3.1",
     "react-apexcharts": "^1.7.0",
@@ -32,6 +28,7 @@
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@types/echarts": "^4.9.22",
+    "@types/node": "^22.13.10",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",

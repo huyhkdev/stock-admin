@@ -1,6 +1,5 @@
 import DetailBarChart from "./contest-detail-components/ContestDetailBarChartComponent";
 import ContestStatisticContainer from "./contest-detail-components/ContestDetailStatisticComponent";
-import { ContestDetailProps } from "./type";
 import ParticipantListComponent from "./contest-detail-components/ParticipantListComponent";
 import { Flex } from "antd";
 import { useInfoContestParticipants, useInfoCurrentRank, useInfoFinalRank } from "../../../hook/useInfoContest";

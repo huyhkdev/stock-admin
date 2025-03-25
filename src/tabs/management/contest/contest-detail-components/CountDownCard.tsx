@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Button, Flex, Statistic, Space } from 'antd';
+import { Typography, Flex, Space } from 'antd';
 import { styled } from 'styled-components';
 import moment from "moment";
 import { Contest } from '../../../../apis/contests.api';

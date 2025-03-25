@@ -19,7 +19,7 @@ interface CustomModalProps {
 }
 
 const CustomModal = ({ title, isModalOpen, handleCancel, child, width }: CustomModalProps) => {
-    const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+    const [_, setScreenWidth] = useState(window.innerWidth);
 
     // Handle resizing events
     useEffect(() => {
@@ -29,11 +29,11 @@ const CustomModal = ({ title, isModalOpen, handleCancel, child, width }: CustomM
     }, []);
 
     // Responsive width logic
-    const responsiveWidth = width ?? (screenWidth >= 1600 ? '40%' :
-        screenWidth >= 1200 ? '50%' :
-        screenWidth >= 992 ? '60%' :
-        screenWidth >= 768 ? '70%' :
-        screenWidth >= 576 ? '80%' : '90%');
+    // const responsiveWidth = width ?? (screenWidth >= 1600 ? '40%' :
+    //     screenWidth >= 1200 ? '50%' :
+    //     screenWidth >= 992 ? '60%' :
+    //     screenWidth >= 768 ? '70%' :
+    //     screenWidth >= 576 ? '80%' : '90%');
 
     return (
         <StyledCustomModal>

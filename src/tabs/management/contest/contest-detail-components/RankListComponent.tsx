@@ -1,9 +1,8 @@
-import { Avatar, Button, Input, Space, Table, Empty, Skeleton, Tooltip } from "antd";
-import { ParticipantListComponentProps, RankListComponentProps } from "../type";
+import { Avatar, Button, Space, Table, Empty, Skeleton, Tooltip } from "antd";
+import {  RankListComponentProps } from "../type";
 import { ColumnsType } from "antd/es/table";
-import { ContestParticipant, TopUser } from "../../../../apis/contests.api";
+import {  TopUser } from "../../../../apis/contests.api";
 import styled from 'styled-components';
-import { useEffect, useState } from "react";
 import moment from "moment";
 
 const StyledTableRank = styled.div`

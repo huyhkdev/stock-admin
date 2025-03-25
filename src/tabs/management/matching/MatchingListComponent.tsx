@@ -7,7 +7,21 @@ import { OrderMatch } from "../../../apis/orders.api";
 import moment from "moment";
 import { filterOrdersMatchByKey, formatIdOrder } from "../../../utils";
 import { FilterType } from "./type";
+import styled from 'styled-components';
 
+ const StyledTableMatching = styled.div`
+  .ant-table-cell {
+    font-size: 0.8rem; /* Thay đổi giá trị theo ý bạn */
+  }
+
+  .clickable-row {
+    cursor: pointer;
+  }
+
+  .ant-table {
+    min-height: 17rem;
+  }
+`;
 const { Option } = Select;
 
 interface ListMatchChartProps {
@@ -214,15 +228,17 @@ const MatchingListComponent: React.FC<ListMatchChartProps> = (props) => {
           <span>page</span>
         </div>
       </Space>
-
-      <Table
-        columns={columns}
-        dataSource={filteredData}
-        loading={loading}
-        bordered
-        size="middle"
-        className="custom-table"
-      />
+      <StyledTableMatching>
+        <Table
+          columns={columns}
+          dataSource={filteredData}
+          loading={loading}
+          bordered
+          size="middle"
+          className="custom-table"
+        />
+      </StyledTableMatching>
+     
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { Contest } from "../apis/contests.api";
 import { OrderInfo, OrderMatch } from "../apis/orders.api";
 import { UserInfo } from "../apis/users.api";
 import { formatIdOrder } from "./formatIdOrder";
@@ -73,4 +74,22 @@ export const filterOrdersMatchByKey = (
       return orderValue === value;
     }
   }) : [];
+};
+export const filterContestsByKey = (
+  contests: Contest[], 
+  key: keyof Contest, 
+  value: Contest[keyof Contest], 
+  fuzzySearch?: boolean
+): Contest[] => {
+
+  return contests.filter(contest => {
+    const contestValue = contest[key];
+    
+    if (fuzzySearch && typeof contestValue === 'string' && typeof value === 'string') {
+      console.log("contestValue",  contestValue.toLowerCase().includes(value.toLowerCase()))
+      return contestValue.toLowerCase().includes(value.toLowerCase());
+    } else {
+      return contestValue === value;
+    }
+  });
 };

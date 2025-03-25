@@ -1,8 +1,6 @@
 import { Modal } from "antd";
 import styled from "styled-components";
 import { useState, useEffect } from "react";
-import "./style.pcss";
-
 const StyledCustomModal = styled.div`
 .custom-modal-title {
     background: white;
@@ -52,9 +50,9 @@ const CustomModal = ({ title, isModalOpen, handleCancel, child, width }: CustomM
                     lg: '60%',
                     xl: '50%',
                     xxl: '40%',
-                }}
+                } as any}
                 style={{ overflowY: 'auto', maxHeight: '85vh', padding: '0', borderRadius: '1rem', scrollbarWidth: 'none' }}
-                body={{ maxHeight: '70vh', overflowY: 'auto', scrollbarWidth: 'none' }}
+                // body={{ maxHeight: '70vh', overflowY: 'auto', scrollbarWidth: 'none' } as any }
             >
                 {child}
             </Modal>

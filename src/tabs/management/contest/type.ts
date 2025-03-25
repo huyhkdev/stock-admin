@@ -2,13 +2,6 @@
 import { Contest, ContestParticipant, TopUser } from "../../../apis/contests.api";
 import { ApexOptions } from "apexcharts";
 
-export interface Contest {
-    contestId: string;
-    contestName: string;
-    startDateTime: Date;
-    endDateTime: Date;
-}
-
 export interface ContestDetailProps {
     contests: Contest[];
     loading: boolean;

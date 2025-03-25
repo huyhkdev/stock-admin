@@ -4,9 +4,6 @@ import { ContestChartProps, ContestDetailProps } from "./type";
 import { Select, Skeleton } from "antd";
 import { MONTHLY_DATA, YEARLY_DATA } from "./constants";
 import { filterContestByInterval } from "../../../utils";
-const { Option } = Select;
-
-
 
 const { Option } = Select;
 const LineContestChartComponent:React.FC<ContestDetailProps> = (props) => {

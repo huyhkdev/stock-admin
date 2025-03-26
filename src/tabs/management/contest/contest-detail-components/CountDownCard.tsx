@@ -45,7 +45,7 @@ const StyledCountDownCard = styled.div`
     margin-bottom: 1rem;
     border-radius: 0.5rem;
     border: 1px solid var(--primary-text-color);
-    width: clamp(6rem, 10vw, 11rem);
+    width: clamp(8rem, 11vw, 11rem);
     padding: clamp(1rem, 3vw, 1.8rem);
     height: fit-content;
     &:hover {
@@ -62,7 +62,7 @@ const StyledCountDownCard = styled.div`
   .countdown-unit{
     color:black !important;
    text-align: center;
-    font-size: 1.5rem !important;
+    font-size: 1.4rem !important;
     font-weight: bold;
     margin-bottom: 0 !important;
   }
@@ -70,7 +70,7 @@ const StyledCountDownCard = styled.div`
 .countdown-title{
     color:black !important;
    text-align: center;
-   font-size: 2.5rem!important;
+   font-size: clamp(1rem, 4vw, 2.5rem)!important;
    font-weight: bold;
 }
  

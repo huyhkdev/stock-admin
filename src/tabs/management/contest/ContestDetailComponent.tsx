@@ -12,12 +12,13 @@ import CountDownCard from "./contest-detail-components/CountDownCard";
 
 const ContestDetailComponent: React.FC<{contest:Contest | null}> = ({ contest }) => {
     const isEnded= new Date(contest?.endDateTime ?? 0) <= new Date();
+    const isStarted = new Date(contest?.startDateTime ?? 0) <= new Date();
     const {data:participants,isLoading:loading } = useInfoContestParticipants(contest!.contestId!);
     const {data:currentRank } = useInfoCurrentRank(contest!.contestId!);
     const {data:finalRank } = useInfoFinalRank(contest!.contestId!);
     const [rank,setRank] = useState<TopUser[]>();
    useEffect(()=>{
-    if(!isEnded){
+    if(!isEnded && isStarted){
         setRank(currentRank);
     }else{
         setRank(finalRank);
@@ -27,7 +28,7 @@ const ContestDetailComponent: React.FC<{contest:Contest | null}> = ({ contest })
         <Flex vertical gap={24} style={{  margin: '1rem 1rem', backgroundColor: '#F4F4F4', padding: '1rem', borderRadius: '10px' }}>
            {contest && <CountDownCard contest={contest}/>}
             {participants && <ContestStatisticContainer participants={participants} contest={contest!} />} 
-            { rank && <RankListComponent topUsers={rank} loading={false} />}
+            { (rank?.length ?? 0) > 0 && <RankListComponent topUsers={rank!} loading={false} />}
             {participants && <DetailBarChart participants={participants} />} 
              <ParticipantListComponent participants={participants!} loading={loading} />
         </Flex>

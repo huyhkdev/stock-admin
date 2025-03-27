@@ -1,6 +1,5 @@
 
 import { Contest, ContestParticipant, TopUser } from "../../../apis/contests.api";
-import { ApexOptions } from "apexcharts";
 
 export interface ContestDetailProps {
     contests: Contest[];
@@ -58,7 +57,4 @@ export interface ContestChartProps {
         }
     }
 }
-export interface ContestChartProps<T extends ApexOptions = ApexOptions> {
-    options: T;
-    series: ApexAxisChartSeries | ApexNonAxisChartSeries;
-}
+

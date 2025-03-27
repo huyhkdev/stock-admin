@@ -1,4 +1,4 @@
-import { Avatar, Button,  Space, Table, Empty, Skeleton, Tooltip } from "antd";
+import { Avatar, Button, Space, Table, Empty, Skeleton, Tooltip } from "antd";
 import {  RankListComponentProps } from "../type";
 import { ColumnsType } from "antd/es/table";
 import {  TopUser } from "../../../../apis/contests.api";

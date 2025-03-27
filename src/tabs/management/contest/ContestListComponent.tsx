@@ -131,7 +131,8 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
         });
     };
 
-    const handleUpdateContest = (values: any, _: any) => {
+
+    const handleUpdateContest = (values: any) => {
         const contest: Contest = {
             contestId: selectedContest?.contestId || null,
             contestName: values.contestName,

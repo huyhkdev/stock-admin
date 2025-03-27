@@ -11,6 +11,7 @@ import CountDownCard from "./contest-detail-components/CountDownCard";
 
 
 const ContestDetailComponent: React.FC<{contest:Contest | null}> = ({ contest }) => {
+    ;
     const isEnded= new Date(contest?.endDateTime ?? 0) <= new Date();
     const isStarted = new Date(contest?.startDateTime ?? 0) <= new Date();
     const {data:participants,isLoading:loading } = useInfoContestParticipants(contest!.contestId!);
@@ -20,7 +21,7 @@ const ContestDetailComponent: React.FC<{contest:Contest | null}> = ({ contest })
    useEffect(()=>{
     if(!isEnded && isStarted){
         setRank(currentRank);
-    }else{
+    }else if(isEnded){
         setRank(finalRank);
     }
    },[currentRank,finalRank,participants])

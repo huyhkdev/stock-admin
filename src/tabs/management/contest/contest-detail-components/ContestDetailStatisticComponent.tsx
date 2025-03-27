@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { UserOutlined, CarryOutOutlined, CalendarOutlined } from '@ant-design/icons';
 import { StatisticCardProps } from "../../user/type";
 import { Card as AntCard, Col, Row } from "antd";
-import { contestParticipants } from '../sampleData';
 import { Contest, ContestParticipant } from '../../../../apis/contests.api';
 import moment from 'moment';
 

@@ -1,4 +1,4 @@
-import { Avatar, Button, Input, Space, Table, Empty, Skeleton } from "antd";
+import { Avatar, Button, Space, Table, Empty, Skeleton } from "antd";
 import { ParticipantListComponentProps } from "../type";
 import { ColumnsType } from "antd/es/table";
 import { ContestParticipant } from "../../../../apis/contests.api";

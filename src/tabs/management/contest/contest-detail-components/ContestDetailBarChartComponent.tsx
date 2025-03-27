@@ -9,7 +9,6 @@ import {
     ReferenceLine,
     ResponsiveContainer,
 } from 'recharts';
-import { contestParticipants } from '../sampleData';
 import { Flex } from 'antd';
 import { ContestParticipant } from '../../../../apis/contests.api';
 

@@ -29,6 +29,12 @@ const columns: ColumnsType<TopUser> = [
     ),
   },
   {
+    title: 'Full Name',
+    dataIndex: 'fullName',
+    key: 'fullName',
+  },
+
+  {
     title: 'Rank',
     dataIndex: 'rank',
     key: 'rank',

@@ -30,17 +30,11 @@ const columns: ColumnsType<ContestParticipant> = [
     ),
   },
   {
-    title: 'Initial Balance',
-    dataIndex: 'initialBalance',
-    key: 'initialBalance',
-    render: (initialBalance: number) => <span>{initialBalance ? initialBalance.toLocaleString() : 0} VND</span>,
+    title: 'Full Name',
+    dataIndex: 'participantName',
+    key: 'participantName',
   },
-  {
-    title: 'Final Balance',
-    dataIndex: 'finalBalance',
-    key: 'finalBalance',
-    render: (finalBalance: number) => <span>{finalBalance ? finalBalance.toLocaleString() : 0} VND</span>,
-  },
+
 ];
 
 const ParticipantListComponent = ({ participants, loading }: ParticipantListComponentProps) => {

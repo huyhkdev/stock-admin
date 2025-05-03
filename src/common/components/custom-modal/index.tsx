@@ -11,7 +11,7 @@ const StyledCustomModal = styled.div`
 `;
 
 interface CustomModalProps {
-    width: number | null;
+    width?: number | null;
     title: string;
     isModalOpen: boolean;
     handleCancel: () => void;

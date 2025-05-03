@@ -8,6 +8,7 @@ import {
 import LoginScreen from "../tabs/auth/login";
 import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { BannerEventManagement } from "../tabs/management/banner-event";
 
 const AppRoutes = () => {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ const AppRoutes = () => {
           <Route path="/order" element={<OrderManagement />} />
           <Route path="/matching" element={<MatchingManagement />} />
           <Route path="/contest" element={<ContestManagement />} />
+          <Route path="/banner-event" element={<BannerEventManagement />} />
         </>
       ) : (
         <Route path="/login" element={<LoginScreen />} />

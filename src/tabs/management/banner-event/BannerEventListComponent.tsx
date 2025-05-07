@@ -11,20 +11,16 @@ import {
 } from "@ant-design/icons";
 import { filterType } from "./constants";
 import CustomModal from "../../../common/components/custom-modal";
-import {
-  useDeleteContest,
-  useUpdateContest,
-} from "../../../hook/useInfoContest";
 import styled from "styled-components";
 import { filterBannerEventsByKey, getError } from "../../../utils";
 import moment from "moment";
 import { BannerEventProps } from "./type";
+import { BannerEvent, BannerStatus } from "../../../apis/banners.api";
 import {
-  BannerEvent,
-  BannerStatus,
-  createBannerEvent,
-} from "../../../apis/banners.api";
-import { useCreateBannerEvent } from "../../../hook/useInfoBannerEvent";
+  useCreateBannerEvent,
+  useDeleteBannerEvent,
+  useUpdateBannerEvent,
+} from "../../../hook/useInfoBannerEvent";
 import BannerEventForm from "../../../common/components/banner-event-form";
 
 const StyledTableContest = styled.div`
@@ -56,8 +52,8 @@ const ListComponent: React.FC<BannerEventProps> = (props) => {
     null
   );
   const { mutate: mutateCreate, isPending } = useCreateBannerEvent();
-  const { mutate: mutateUpdate } = useUpdateContest();
-  const { mutate: mutateDelete } = useDeleteContest();
+  const { mutate: mutateUpdate, isPending: isUpdatePending } = useUpdateBannerEvent();
+  const { mutate: mutateDelete } = useDeleteBannerEvent();
   const [dataSource, setDataSource] =
     useState<BannerEvent[]>(filteredBannerEvents);
   const [loadAgain, setLoadAgain] = useState(false);
@@ -136,34 +132,32 @@ const ListComponent: React.FC<BannerEventProps> = (props) => {
     });
   };
 
-  //   const handleUpdateContest = (values: any, _: any) => {
-  //     const banner: BannerEvent = {
-  //       id: selectedContest?.id ?? 0,
-  //       contestName: values.contestName,
-  //       startDateTime: new Date(values.contestDuration[0]),
-  //       endDateTime: new Date(values.contestDuration[1]),
-  //       banner: values.banner,
-  //     };
-  //     mutateUpdate(banner, {
-  //       onSuccess: () => {
-  //         message.success("Contest updated successfully!");
-  //         setIsUpdateModalOpen(false); // Đóng modal sau khi cập nhật thành công
-  //         // form.resetFields(); // Clear các field trong form
-  //       },
-  //       onError: (error) => {
-  //         message.error("Failed to update contest: " + error.message);
-  //         setIsUpdateModalOpen(false); // Đóng modal sau khi cập nhật thành công
-  //       },
-  //     });
-  //   };
+  const handleUpdateBanner = (formData: FormData, onSuccess: () => void) => {
+    if (!selectedBanner) return;
 
-  const handleDeleteContest = (id: number) => {
+    mutateUpdate(
+      { id: selectedBanner.id, formData },
+      {
+        onSuccess: () => {
+          message.success("Banner updated successfully!");
+          setIsUpdateModalOpen(false);
+          setLoadAgain((prev) => !prev);
+          onSuccess();
+        },
+        onError: (error) => {
+          message.error("Failed to update banner: " + getError(error));
+        },
+      }
+    );
+  };
+
+  const handleDeleteBanner = (id: number) => {
     mutateDelete(id, {
       onSuccess: () => {
-        message.success("Contest deleted successfully!");
+        message.success("Banner Event deleted successfully!");
       },
       onError: (error) => {
-        message.error("Failed to delete contest: " + error.message);
+        message.error("Failed to delete Banner Event: " + error.message);
       },
     });
   };
@@ -308,7 +302,7 @@ const ListComponent: React.FC<BannerEventProps> = (props) => {
                   danger: true,
                   label: "Delete",
                   icon: <DeleteOutlined />,
-                  onClick: () => handleDeleteContest(record.id),
+                  onClick: () => handleDeleteBanner(record.id),
                 },
               ],
             }}
@@ -322,10 +316,15 @@ const ListComponent: React.FC<BannerEventProps> = (props) => {
   ];
 
   const handleSearch = (value: string) => {
-    const result = filterBannerEventsByKey(filteredBannerEvents, "title", value, true);
+    const result = filterBannerEventsByKey(
+      filteredBannerEvents,
+      "title",
+      value,
+      true
+    );
     setDataSource(result);
   };
-  
+
   const onSearch: SearchProps["onSearch"] = (value) => {
     handleSearch(value);
   };
@@ -374,7 +373,7 @@ const ListComponent: React.FC<BannerEventProps> = (props) => {
             ))}
           </Select>
           <Input.Search
-            placeholder=" Search contest"
+            placeholder=" Search banner"
             style={{ width: 200 }}
             onSearch={onSearch}
           />
@@ -387,7 +386,7 @@ const ListComponent: React.FC<BannerEventProps> = (props) => {
             }}
             onClick={showModal}
           >
-            Create Contest
+            Create Banner
           </Button>
         </Space>
 
@@ -437,19 +436,20 @@ const ListComponent: React.FC<BannerEventProps> = (props) => {
           />
         }
       />
-      {/* <CustomModal
+      <CustomModal
         key="update-contest"
         title={`Update contest`}
         isModalOpen={isUpdateModalOpen}
         handleCancel={handleUpdateModalCancel}
         width={null}
         child={
-          <ContestForm
-            contest={selectedContest}
-            handleSubmit={handleUpdateContest}
+          <BannerEventForm
+            banner={selectedBanner}
+            isLoading={isUpdatePending}
+            handleSubmit={handleUpdateBanner}
           />
         }
-      /> */}
+      />
       {/* <CustomModal key='contest-detail'
                 title={selectedContest?.contestName || 'Contest Details'}
                 isModalOpen={isDetailModalOpen}

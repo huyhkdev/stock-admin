@@ -114,7 +114,8 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
             contestName: values.contestName,
             startDateTime: new Date(values.contestDuration[0]),
             endDateTime: new Date(values.contestDuration[1]),
-            banner: values.banner
+            banner: values.banner,
+            maxParticipants: values.maxParticipants,
         };
         mutateCreate(contest, {
             onSuccess: () => {
@@ -137,7 +138,8 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
             contestName: values.contestName,
             startDateTime: new Date(values.contestDuration[0]),
             endDateTime: new Date(values.contestDuration[1]),
-            banner: values.banner
+            banner: values.banner,
+            maxParticipants: values.maxParticipants,
         };
         mutateUpdate(contest, {
             onSuccess: () => {
@@ -250,6 +252,12 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
             key: 'endDateTime',
             sorter: (a, b) => new Date(a.endDateTime).getTime() - new Date(b.endDateTime).getTime(),
             render: (endDateTime: Date) => moment(endDateTime).format("YYYY-MM-DD HH:mm:ss"),
+        },
+        {
+            title: 'Max Participants',
+            dataIndex: 'maxParticipants',
+            key: 'maxParticipants',
+            render: (maxParticipants: number) => maxParticipants > 0 ? maxParticipants.toLocaleString() : 'Unlimited',
         },
         {
             title: 'Banner',

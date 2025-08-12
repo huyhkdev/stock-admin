@@ -57,4 +57,3 @@ export interface ContestChartProps {
         }
     }
 }
-

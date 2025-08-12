@@ -55,6 +55,6 @@ export const getRankByContest = async (contestId: number): Promise<TopUser[]> =>
     return response.data.data;
 };
 export const getCurrentRankByContest = async (contestId: number): Promise<TopUser[]> => {
-    const response = await api.post(`${appUrls.tradeURL}/contests/${contestId}/current-rank`);
+    const response = await api.get(`${appUrls.tradeURL}/current-rank/contests/${contestId}`);
     return response.data.data;
 };

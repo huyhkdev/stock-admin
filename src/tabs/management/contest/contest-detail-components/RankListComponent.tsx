@@ -1,4 +1,4 @@
-import { Avatar, Button,  Space, Table, Empty, Skeleton, Tooltip } from "antd";
+import { Avatar, Button, Space, Table, Empty, Skeleton, Tooltip } from "antd";
 import {  RankListComponentProps } from "../type";
 import { ColumnsType } from "antd/es/table";
 import {  TopUser } from "../../../../apis/contests.api";
@@ -28,6 +28,12 @@ const columns: ColumnsType<TopUser> = [
       </Space>
     ),
   },
+  {
+    title: 'Full Name',
+    dataIndex: 'fullName',
+    key: 'fullName',
+  },
+
   {
     title: 'Rank',
     dataIndex: 'rank',

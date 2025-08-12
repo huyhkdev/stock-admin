@@ -1,6 +1,7 @@
 import { Menu } from "antd";
 import {
   OrderedListOutlined,
+  SoundOutlined,
   SyncOutlined,
   TrophyOutlined,
   UserOutlined,
@@ -49,6 +50,16 @@ const menuItems = [
     ),
     path: "/contest",
     icon: <TrophyOutlined />,
+  },
+  {
+    key: "5",
+    label: (
+      <Link onClick={() => onScrollToTop()} to="/banner-event">
+        Manage Banner Events
+      </Link>
+    ),
+    path: "/banner-event",
+    icon: <SoundOutlined />,
   },
 ];
 

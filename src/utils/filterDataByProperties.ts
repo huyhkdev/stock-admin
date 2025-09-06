@@ -1,3 +1,4 @@
+import { BannerEvent } from "../apis/banners.api";
 import { Contest } from "../apis/contests.api";
 import { OrderInfo, OrderMatch } from "../apis/orders.api";
 import { UserInfo } from "../apis/users.api";
@@ -90,6 +91,24 @@ export const filterContestsByKey = (
       return contestValue.toLowerCase().includes(value.toLowerCase());
     } else {
       return contestValue === value;
+    }
+  });
+};
+
+export const filterBannerEventsByKey = (
+  banners: BannerEvent[], 
+  key: keyof BannerEvent, 
+  value: BannerEvent[keyof BannerEvent], 
+  fuzzySearch?: boolean
+): BannerEvent[] => {
+
+  return banners.filter(banner => {
+    const bannerValue = banner[key];
+    
+    if (fuzzySearch && typeof bannerValue === 'string' && typeof value === 'string') {
+      return bannerValue.toLowerCase().includes(value.toLowerCase());
+    } else {
+      return bannerValue === value;
     }
   });
 };

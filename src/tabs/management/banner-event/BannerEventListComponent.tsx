@@ -42,11 +42,11 @@ const ListComponent: React.FC<BannerEventProps> = (props) => {
   const [filteredBannerEvents, setFilteredBannerEvents] =
     useState<BannerEvent[]>(banners);
   const [filterOption, setFilterOption] = useState<string>("All");
-  const [bannersSearch, setBannersSearch] = useState<BannerEvent[]>();
+  // const [bannersSearch, setBannersSearch] = useState<BannerEvent[]>();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(5);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  // const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedBanner, setSelectedBanner] = useState<BannerEvent | null>(
     null
@@ -108,14 +108,14 @@ const ListComponent: React.FC<BannerEventProps> = (props) => {
   };
 
   const showDetailModal = (record: BannerEvent) => {
-    setIsDetailModalOpen(true);
+    // setIsDetailModalOpen(true);
     setSelectedBanner(record);
   };
 
-  const handleDetailModalCancel = () => {
-    setIsDetailModalOpen(false);
-    setSelectedBanner(null);
-  };
+  // const handleDetailModalCancel = () => {
+  //   setIsDetailModalOpen(false);
+  //   setSelectedBanner(null);
+  // };
 
   const handleCreateBanner = (formData: FormData, onSuccess: () => void) => {
     mutateCreate(formData, {

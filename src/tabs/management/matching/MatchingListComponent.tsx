@@ -46,10 +46,12 @@ const MatchingListComponent: React.FC<ListMatchChartProps> = (props) => {
 
   const openOrderDetail = async (orderId: string) => {
     if (!orderId) return;
+    // Ensure we search with a zero-padded numeric id (e.g., 00284)
+    const normalizedId = orderId.toString().replace(/\D/g, "").padStart(5, "0");
     setIsModalOpen(true);
     setModalLoading(true);
     try {
-      const detail = await getOrderById(orderId);
+      const detail = await getOrderById(normalizedId);
       setSelectedOrder(detail);
     } finally {
       setModalLoading(false);

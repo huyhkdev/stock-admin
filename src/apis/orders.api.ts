@@ -63,6 +63,11 @@ export interface OrderDetailResponse {
   data: OrderInfo | null;
 }
 
+export interface ExportOrdersParams {
+  startDate: string; // ISO string
+  endDate: string;   // ISO string
+}
+
 export const getAllInfoOrders = async (
   params?: {
     page?: number;
@@ -131,4 +136,20 @@ export const getOrderById = async (orderId: string): Promise<OrderInfo | null> =
   });
   const items: OrderInfo[] = response?.data?.data?.items ?? [];
   return items.length > 0 ? items[0] : null;
+};
+
+export const exportAllOrdersCSV = async (
+  params: ExportOrdersParams
+): Promise<Blob> => {
+  const response = await api.get(
+    `${appUrls.tradeURL}/admin/all-order/export`,
+    {
+      params: {
+        startDate: params.startDate,
+        endDate: params.endDate,
+      },
+      responseType: 'blob',
+    }
+  );
+  return response.data as Blob;
 };

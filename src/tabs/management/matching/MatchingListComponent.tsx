@@ -3,7 +3,7 @@ import { ColumnsType } from "antd/es/table";
 import { SearchProps } from "antd/es/input";
 import { useEffect, useState } from "react";
 import { filterType } from "./constants";
-import { MatchDateRange, OrderMatch, getOrderById, OrderInfo } from "../../../apis/orders.api";
+import { MatchDateRange, OrderMatch, getOrderById, OrderInfo, OrderMatchSortBy, OrderMatchSortOrder } from "../../../apis/orders.api";
 import moment from "moment";
 import { formatIdOrder } from "../../../utils";
 import { FilterType } from "./type";
@@ -34,9 +34,12 @@ interface ListMatchChartProps {
   onSearchUid: (value: string) => void;
   onChangeDateRange: (value: MatchDateRange) => void;
   currentDateRange: MatchDateRange;
+  sortBy: OrderMatchSortBy;
+  sortOrder: OrderMatchSortOrder;
+  onChangeSort: (sortBy: OrderMatchSortBy, sortOrder: OrderMatchSortOrder) => void;
 }
 const MatchingListComponent: React.FC<ListMatchChartProps> = (props) => {
-  const { data, loading, page, limit, total, onChangePage, onSearchUid, onChangeDateRange } = props;
+  const { data, loading, page, limit, total, onChangePage, onSearchUid, onChangeDateRange, sortBy, sortOrder, onChangeSort } = props;
   const [filteredData, setFilteredData] = useState<OrderMatch[]>(data);
   const [filterOption, setFilterOption] = useState<FilterType>("All");
   const [searchValue, setSearchValue] = useState<string>("");
@@ -175,8 +178,8 @@ const MatchingListComponent: React.FC<ListMatchChartProps> = (props) => {
       title: "Created At",
       dataIndex: "createdAt",
       key: "createdAt",
-      sorter: (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      sorter: true,
+      sortOrder: sortBy === "createdAt" ? (sortOrder === "asc" ? "ascend" : "descend") : null,
       render: (createAt: Date) =>
         moment(createAt).format("YYYY-MM-DD HH:mm:ss"),
     },
@@ -184,8 +187,8 @@ const MatchingListComponent: React.FC<ListMatchChartProps> = (props) => {
       title: "Updated At",
       dataIndex: "updatedAt",
       key: "updatedAt",
-      sorter: (a, b) =>
-        new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
+      sorter: true,
+      sortOrder: sortBy === "updatedAt" ? (sortOrder === "asc" ? "ascend" : "descend") : null,
       render: (updatedAt: Date) =>
         moment(updatedAt).format("YYYY-MM-DD HH:mm:ss"),
     },
@@ -274,6 +277,18 @@ const MatchingListComponent: React.FC<ListMatchChartProps> = (props) => {
             total: total,
             showSizeChanger: true,
             onChange: (p, pageSize) => onChangePage(p, pageSize),
+          }}
+          onChange={(_pagination, _filters, sorter) => {
+            if (sorter && !Array.isArray(sorter)) {
+              const { field, order } = sorter;
+              if (field === undefined || order === null || order === undefined) {
+                onChangeSort("createdAt", "desc");
+              } else if (field === "createdAt" || field === "updatedAt") {
+                const newSortBy = field as OrderMatchSortBy;
+                const newSortOrder = order === "ascend" ? "asc" : "desc";
+                onChangeSort(newSortBy, newSortOrder);
+              }
+            }
           }}
         />
       </StyledTableMatching>

@@ -2,7 +2,7 @@ import { Space } from "antd";
 import { useState, useMemo } from "react";
 import MatchingListComponent from "./MatchingListComponent";
 import { useInfoOrdersMatch } from "../../../hook/useInfoOrders";
-import { MatchDateRange, OrderMatch } from "../../../apis/orders.api";
+import { MatchDateRange, OrderMatch, OrderMatchSortBy, OrderMatchSortOrder } from "../../../apis/orders.api";
 import { formatIdOrder } from "../../../utils";
 
 export const MatchingManagement = () => {
@@ -10,8 +10,10 @@ export const MatchingManagement = () => {
   const [limit, setLimit] = useState<number>(10);
   const [searchUid, setSearchUid] = useState<string>("");
   const [dateRange, setDateRange] = useState<MatchDateRange>("all");
+  const [sortBy, setSortBy] = useState<OrderMatchSortBy>("createdAt");
+  const [sortOrder, setSortOrder] = useState<OrderMatchSortOrder>("desc");
 
-  const { data, isLoading } = useInfoOrdersMatch({ page, limit, searchUid, dateRange });
+  const { data, isLoading } = useInfoOrdersMatch({ page, limit, searchUid, dateRange, sortBy, sortOrder });
 
   const dataOrderMatchList: OrderMatch[] = useMemo(() => {
     const items = data?.items ?? [];
@@ -38,6 +40,13 @@ export const MatchingManagement = () => {
     setPage(1);
     setDateRange(value);
   };
+
+  const handleChangeSort = (newSortBy: OrderMatchSortBy, newSortOrder: OrderMatchSortOrder) => {
+    setPage(1);
+    setSortBy(newSortBy);
+    setSortOrder(newSortOrder);
+  };
+
   return (
     <Space direction="vertical" size="middle" style={{ display: "flex" }}>
       <h1 style={{ fontSize: 24, fontWeight: 600 }}>Matching Management</h1>
@@ -55,6 +64,9 @@ export const MatchingManagement = () => {
         onSearchUid={handleSearchUid}
         onChangeDateRange={handleChangeDateRange}
         currentDateRange={dateRange}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onChangeSort={handleChangeSort}
       />
     </Space>
   );

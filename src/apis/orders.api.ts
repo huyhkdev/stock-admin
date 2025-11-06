@@ -47,6 +47,9 @@ export interface OrderMatchListResponse {
   pagination: Pagination;
 }
 
+export type OrderMatchSortBy = "createdAt" | "updatedAt";
+export type OrderMatchSortOrder = "asc" | "desc";
+
 export interface Pagination {
   page: number;
   limit: number;
@@ -103,7 +106,14 @@ export const getAllInfoOrders = async (
 };
 
 export const getAllInfoOrdersMatch = async (
-  params?: { page?: number; limit?: number; searchUid?: string; dateRange?: MatchDateRange }
+  params?: {
+    page?: number;
+    limit?: number;
+    searchUid?: string;
+    dateRange?: MatchDateRange;
+    sortBy?: OrderMatchSortBy;
+    sortOrder?: OrderMatchSortOrder;
+  }
 ): Promise<OrderMatchListResponse> => {
   const queryParams: Record<string, string | number> = {
     page: params?.page ?? 1,
@@ -112,6 +122,9 @@ export const getAllInfoOrdersMatch = async (
 
   if (params?.searchUid) queryParams.searchUid = params.searchUid;
   if (params?.dateRange) queryParams.dateRange = params.dateRange;
+  // default sorting: createdAt desc
+  queryParams.sortBy = params?.sortBy ?? "createdAt";
+  queryParams.sortOrder = params?.sortOrder ?? "desc";
 
   const response = await api.get(`${appUrls.tradeURL}/admin/match-histories`, {
     params: queryParams,

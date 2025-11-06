@@ -111,8 +111,8 @@ export const getAllInfoOrdersMatch = async (
     limit?: number;
     searchUid?: string;
     dateRange?: MatchDateRange;
-    sortBy?: OrderMatchSortBy;
-    sortOrder?: OrderMatchSortOrder;
+    sortBy?: OrderMatchSortBy | null;
+    sortOrder?: OrderMatchSortOrder | null;
   }
 ): Promise<OrderMatchListResponse> => {
   const queryParams: Record<string, string | number> = {
@@ -122,9 +122,14 @@ export const getAllInfoOrdersMatch = async (
 
   if (params?.searchUid) queryParams.searchUid = params.searchUid;
   if (params?.dateRange) queryParams.dateRange = params.dateRange;
-  // default sorting: createdAt desc
-  queryParams.sortBy = params?.sortBy ?? "createdAt";
-  queryParams.sortOrder = params?.sortOrder ?? "desc";
+  // Only include sortBy and sortOrder if they are not null
+  // If null, backend will use its default (createdAt desc)
+  if (params?.sortBy !== null && params?.sortBy !== undefined) {
+    queryParams.sortBy = params.sortBy;
+  }
+  if (params?.sortOrder !== null && params?.sortOrder !== undefined) {
+    queryParams.sortOrder = params.sortOrder;
+  }
 
   const response = await api.get(`${appUrls.tradeURL}/admin/match-histories`, {
     params: queryParams,

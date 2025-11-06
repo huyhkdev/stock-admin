@@ -8,7 +8,7 @@ export const useInfoOrders = (params?: { page?: number; limit?: number; side?: O
       });
 }
 
-export const useInfoOrdersMatch = (params?: { page?: number; limit?: number; searchUid?: string; dateRange?: MatchDateRange; sortBy?: OrderMatchSortBy; sortOrder?: OrderMatchSortOrder }) => {
+export const useInfoOrdersMatch = (params?: { page?: number; limit?: number; searchUid?: string; dateRange?: MatchDateRange; sortBy?: OrderMatchSortBy | null; sortOrder?: OrderMatchSortOrder | null }) => {
   return useQuery({
     queryKey: [
       "ordersMatch",
@@ -16,8 +16,8 @@ export const useInfoOrdersMatch = (params?: { page?: number; limit?: number; sea
       params?.limit ?? 10,
       params?.searchUid ?? "",
       params?.dateRange ?? "all",
-      params?.sortBy ?? "createdAt",
-      params?.sortOrder ?? "desc",
+      params?.sortBy ?? null,
+      params?.sortOrder ?? null,
     ],
     queryFn: () => getAllInfoOrdersMatch(params),
   });

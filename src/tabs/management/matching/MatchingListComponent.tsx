@@ -34,9 +34,9 @@ interface ListMatchChartProps {
   onSearchUid: (value: string) => void;
   onChangeDateRange: (value: MatchDateRange) => void;
   currentDateRange: MatchDateRange;
-  sortBy: OrderMatchSortBy;
-  sortOrder: OrderMatchSortOrder;
-  onChangeSort: (sortBy: OrderMatchSortBy, sortOrder: OrderMatchSortOrder) => void;
+  sortBy: OrderMatchSortBy | null;
+  sortOrder: OrderMatchSortOrder | null;
+  onChangeSort: (sortBy: OrderMatchSortBy | null, sortOrder: OrderMatchSortOrder | null) => void;
 }
 const MatchingListComponent: React.FC<ListMatchChartProps> = (props) => {
   const { data, loading, page, limit, total, onChangePage, onSearchUid, onChangeDateRange, sortBy, sortOrder, onChangeSort } = props;
@@ -179,7 +179,7 @@ const MatchingListComponent: React.FC<ListMatchChartProps> = (props) => {
       dataIndex: "createdAt",
       key: "createdAt",
       sorter: true,
-      sortOrder: sortBy === "createdAt" ? (sortOrder === "asc" ? "ascend" : "descend") : null,
+      sortOrder: sortBy === "createdAt" && sortOrder ? (sortOrder === "asc" ? "ascend" : "descend") : null,
       render: (createAt: Date) =>
         moment(createAt).format("YYYY-MM-DD HH:mm:ss"),
     },
@@ -188,7 +188,7 @@ const MatchingListComponent: React.FC<ListMatchChartProps> = (props) => {
       dataIndex: "updatedAt",
       key: "updatedAt",
       sorter: true,
-      sortOrder: sortBy === "updatedAt" ? (sortOrder === "asc" ? "ascend" : "descend") : null,
+      sortOrder: sortBy === "updatedAt" && sortOrder ? (sortOrder === "asc" ? "ascend" : "descend") : null,
       render: (updatedAt: Date) =>
         moment(updatedAt).format("YYYY-MM-DD HH:mm:ss"),
     },
@@ -282,7 +282,8 @@ const MatchingListComponent: React.FC<ListMatchChartProps> = (props) => {
             if (sorter && !Array.isArray(sorter)) {
               const { field, order } = sorter;
               if (field === undefined || order === null || order === undefined) {
-                onChangeSort("createdAt", "desc");
+                // When canceling sort, send null for sortBy and sortOrder
+                onChangeSort(null, null);
               } else if (field === "createdAt" || field === "updatedAt") {
                 const newSortBy = field as OrderMatchSortBy;
                 const newSortOrder = order === "ascend" ? "asc" : "desc";

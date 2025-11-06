@@ -10,8 +10,8 @@ export const MatchingManagement = () => {
   const [limit, setLimit] = useState<number>(10);
   const [searchUid, setSearchUid] = useState<string>("");
   const [dateRange, setDateRange] = useState<MatchDateRange>("all");
-  const [sortBy, setSortBy] = useState<OrderMatchSortBy>("createdAt");
-  const [sortOrder, setSortOrder] = useState<OrderMatchSortOrder>("desc");
+  const [sortBy, setSortBy] = useState<OrderMatchSortBy | null>("createdAt");
+  const [sortOrder, setSortOrder] = useState<OrderMatchSortOrder | null>("desc");
 
   const { data, isLoading } = useInfoOrdersMatch({ page, limit, searchUid, dateRange, sortBy, sortOrder });
 
@@ -41,7 +41,7 @@ export const MatchingManagement = () => {
     setDateRange(value);
   };
 
-  const handleChangeSort = (newSortBy: OrderMatchSortBy, newSortOrder: OrderMatchSortOrder) => {
+  const handleChangeSort = (newSortBy: OrderMatchSortBy | null, newSortOrder: OrderMatchSortOrder | null) => {
     setPage(1);
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);

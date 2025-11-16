@@ -13,6 +13,7 @@ export type OrderStatusType =
 
 export interface OrderInfo {
   id: string;
+  uid: string;
   email: string;
   ticker: string;
   type: OrderMarketType;
@@ -27,21 +28,128 @@ export interface OrderInfo {
 
 export interface OrderMatch {
   id: string;
+  uid: string;
   orderBuyId: string;
   orderSellId: string;
   incomingOrderId: string;
+  incomingOrderPrice?: number;
+  incomingOrderTicker?: string;
   amount: number;
   price: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export const getAllInfoOrders = async (): Promise<OrderInfo[]> => {
-  const response = await api.get(`${appUrls.tradeURL}/admin/open-order`);
-  return response.data.data;
+export type MatchDateRange = "day" | "week" | "month" | "year" | "all";
+
+export interface OrderMatchListResponse {
+  items: OrderMatch[];
+  pagination: Pagination;
+}
+
+export interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface OrderListResponse {
+  items: OrderInfo[];
+  pagination: Pagination;
+}
+
+export interface OrderDetailResponse {
+  data: OrderInfo | null;
+}
+
+export interface ExportOrdersParams {
+  startDate: string; // ISO string
+  endDate: string;   // ISO string
+}
+
+export const getAllInfoOrders = async (
+  params?: {
+    page?: number;
+    limit?: number;
+    side?: OrderSideType;
+    type?: OrderMarketType;
+    status?: OrderStatusType;
+    search?: string;
+  }
+): Promise<OrderListResponse> => {
+  const queryParams: Record<string, string | number> = {
+    page: params?.page ?? 1,
+    limit: params?.limit ?? 10,
+  };
+
+  if (params?.side) queryParams.side = params.side;
+  if (params?.type) queryParams.type = params.type;
+  if (params?.status) queryParams.status = params.status;
+  if (params?.search) queryParams.search = params.search;
+
+  const response = await api.get(`${appUrls.tradeURL}/admin/all-order`, {
+    params: queryParams,
+  });
+  return {
+    items: response.data?.data?.items ?? [],
+    pagination: response.data?.data?.pagination ?? {
+      page: params?.page ?? 1,
+      limit: params?.limit ?? 10,
+      total: 0,
+      totalPages: 0,
+    },
+  };
 };
 
-export const getAllInfoOrdersMatch = async (): Promise<OrderMatch[]> => {
-  const response = await api.get(`${appUrls.tradeURL}/admin/match-histories`);
-  return response.data.data;
+export const getAllInfoOrdersMatch = async (
+  params?: { page?: number; limit?: number; searchUid?: string; dateRange?: MatchDateRange }
+): Promise<OrderMatchListResponse> => {
+  const queryParams: Record<string, string | number> = {
+    page: params?.page ?? 1,
+    limit: params?.limit ?? 10,
+  };
+
+  if (params?.searchUid) queryParams.searchUid = params.searchUid;
+  if (params?.dateRange) queryParams.dateRange = params.dateRange;
+
+  const response = await api.get(`${appUrls.tradeURL}/admin/match-histories`, {
+    params: queryParams,
+  });
+
+  return {
+    items: response.data?.data?.items ?? [],
+    pagination: response.data?.data?.pagination ?? {
+      page: params?.page ?? 1,
+      limit: params?.limit ?? 10,
+      total: 0,
+      totalPages: 0,
+    },
+  };
+};
+
+export const getOrderById = async (orderId: string): Promise<OrderInfo | null> => {
+  if (!orderId) return null;
+  // BE supports searching via all-order with `search` (can be Order ID or UID)
+  const response = await api.get(`${appUrls.tradeURL}/admin/all-order`, {
+    params: { page: 1, limit: 1, search: orderId },
+  });
+  const items: OrderInfo[] = response?.data?.data?.items ?? [];
+  return items.length > 0 ? items[0] : null;
+};
+
+export const exportAllOrdersCSV = async (
+  params: ExportOrdersParams
+): Promise<Blob> => {
+  const response = await api.get(
+    `${appUrls.tradeURL}/admin/all-order/export`,
+    {
+      params: {
+        startDate: params.startDate,
+        endDate: params.endDate,
+      },
+      responseType: 'blob',
+    }
+  );
+  return response.data as Blob;
 };

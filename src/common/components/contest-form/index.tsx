@@ -47,7 +47,8 @@ const ContestForm: React.FC<{ contest: Contest | null, handleSubmit: (values: an
             form.setFieldsValue({
                 contestName: contest.contestName,
                 contestDuration: [dayjs(contest.startDateTime), dayjs(contest.endDateTime)],
-                banner: contest.banner
+                banner: contest.banner,
+                maxParticipants: contest.maxParticipants,
             });
         }
     }
@@ -115,6 +116,12 @@ const ContestForm: React.FC<{ contest: Contest | null, handleSubmit: (values: an
                     rules={[{ required: true, message: "Please enter a banner" }]}
                 >
                     <Input placeholder='Input contest banner' className='input' />
+                </Form.Item>
+                <Form.Item
+                    label="Max number of participants"
+                    name="maxParticipants"
+                >
+                    <Input placeholder='Input max number of participants' className='input' />
                 </Form.Item>
                 <Form.Item>
                     <Button htmlType="submit" block className="create-btn">

@@ -7,6 +7,7 @@ export interface Contest {
     startDateTime: Date;
     endDateTime: Date;
     banner: string;
+    maxParticipants: number;
 }
 
 export interface ContestParticipant {

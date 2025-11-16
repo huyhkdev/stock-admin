@@ -1,21 +1,17 @@
-import { Image, message, Skeleton, Switch, Tag } from "antd";
+import { Image, message, Skeleton, Switch } from "antd";
 import { Button, Dropdown, Input, Select, Space, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { SearchProps } from "antd/es/input";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
     AuditOutlined,
     DeleteOutlined,
     EditOutlined,
     MoreOutlined,
 } from "@ant-design/icons";
-import { filterType } from "./constants";
 import CustomModal from "../../../common/components/custom-modal";
 import styled from "styled-components";
-import { filterBannerEventsByKey, getError } from "../../../utils";
-import moment from "moment";
-import { BannerEventProps } from "./type";
-import { BannerEvent, BannerStatus } from "../../../apis/banners.api";
+import { getError } from "../../../utils";
+import { BannerEvent } from "../../../apis/banners.api";
 import {
     useBannerEventToggle,
     useCreateBannerEvent,
@@ -90,7 +86,8 @@ const ListComponent = () => {
     };
 
     const showDetailModal = (record: BannerEvent) => {
-        setIsDetailModalOpen(true);
+        // TODO: Implement detail modal functionality
+        console.log('Show detail for banner:', record);
         setSelectedBanner(record);
     };
 
@@ -263,8 +260,8 @@ const ListComponent = () => {
                 <Space>
                     <Select
                         value={activation}
-                        onChange={(e) => setActivation(e)}
-                        defaultValue="Today"
+                        onChange={(value: "All" | "Active" | "Inactive") => setActivation(value)}
+                        defaultValue="All"
                         style={{ width: "10rem" }}
                     >
                         <Option value="All">All</Option>

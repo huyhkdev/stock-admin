@@ -1,5 +1,5 @@
-import { Button, Form, Input, DatePicker, InputNumber, Upload, message, Image } from 'antd';
-import type { GetProps } from 'antd';
+import { Button, Form, Input, Upload, message, Image } from 'antd';
+import type { UploadFile } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
@@ -20,7 +20,7 @@ const BannerEventForm: React.FC<{
 }> = ({ banner, handleSubmit, isLoading }) => {
     const [form] = Form.useForm();
     const [file, setFile] = useState<File | null>(null);
-    const [fileList, setFileList] = useState([]);
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
 
     useEffect(() => {
         if (banner) {
@@ -32,7 +32,7 @@ const BannerEventForm: React.FC<{
         }
     }, [banner, form]);
 
-    const onFinish = (values: any) => {
+    const onFinish = (values: { title: string; description: string }) => {
         const formData = new FormData();
         formData.append('title', values.title);
         formData.append('description', values.description);
@@ -79,7 +79,12 @@ const BannerEventForm: React.FC<{
                     <Upload
                         beforeUpload={(file) => {
                             setFile(file);
-                            setFileList([file]);
+                            setFileList([{
+                                uid: file.name + Date.now(),
+                                name: file.name,
+                                status: 'done',
+                                originFileObj: file
+                            } as UploadFile]);
                             return false;
                         }}
                         fileList={fileList}

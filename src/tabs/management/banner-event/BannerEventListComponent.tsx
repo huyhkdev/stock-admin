@@ -85,12 +85,6 @@ const ListComponent = () => {
         setSelectedBanner(null);
     };
 
-    const showDetailModal = (record: BannerEvent) => {
-        // TODO: Implement detail modal functionality
-        console.log('Show detail for banner:', record);
-        setSelectedBanner(record);
-    };
-
     const handleCreateBanner = (formData: FormData, onSuccess: () => void) => {
         mutateCreate(formData, {
             onSuccess: () => {
@@ -154,11 +148,10 @@ const ListComponent = () => {
             dataIndex: "title",
             key: "title",
             width: "60%",
-            render: (text, record) => (
+            render: (text) => (
                 <Space
                     title="Click to view details"
                     style={{ cursor: "pointer" }}
-                    onClick={() => showDetailModal(record)}
                 >
                     <AuditOutlined />
                     {text}
@@ -245,7 +238,7 @@ const ListComponent = () => {
                 }}
             >
                 <h3 style={{ fontSize: 18, fontWeight: 600 }}> Banner Events</h3>
-   
+
             </Space>
 
             <Space

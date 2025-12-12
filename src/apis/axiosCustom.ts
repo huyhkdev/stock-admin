@@ -55,11 +55,11 @@ export class Api {
             (response) => response,
             async (error: AxiosError) => {
                 if (!this.isExpiredTokenError(error)) {
-                    // handle error
-                    window.location.href = '/login';
+                    // handle error 
                     localStorage.removeItem("accessToken");
                     localStorage.removeItem("refreshToken");
-                    // return Promise.reject(error);
+                    window.location.href = '/login';
+                    return Promise.reject(error);
                 }
 
                 if (!this.isRefreshing) {

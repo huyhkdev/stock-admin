@@ -10,7 +10,7 @@ export class Api {
 
     constructor() {
         this.instance = axios.create({
-          timeout: 7000,
+            timeout: 7000,
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -54,7 +54,13 @@ export class Api {
         this.instance.interceptors.response.use(
             (response) => response,
             async (error: AxiosError) => {
-                if (!this.isExpiredTokenError(error)) return Promise.reject(error);
+                if (!this.isExpiredTokenError(error)) {
+                    // handle error
+                    window.location.href = '/login';
+                    localStorage.removeItem("accessToken");
+                    localStorage.removeItem("refreshToken");
+                    // return Promise.reject(error);
+                }
 
                 if (!this.isRefreshing) {
                     this.isRefreshing = true;

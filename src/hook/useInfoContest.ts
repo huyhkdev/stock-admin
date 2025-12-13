@@ -56,7 +56,8 @@ export const useCreateContest = () => {
 export const useUpdateContest = () => {
     const queryClient = useQueryClient();
     return useMutation({
-      mutationFn: updateContest,
+      mutationFn: ({ contestId, formData }: { contestId: number; formData: FormData }) => 
+        updateContest(contestId, formData),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["contests"] });
       },

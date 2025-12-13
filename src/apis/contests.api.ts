@@ -39,12 +39,20 @@ export const getContestParticipantsByContestId = async (contestId: number): Prom
     return response.data.data;
 };
 
-export const createContest = async (contest: Contest): Promise<Contest> => {
-    const response = await api.post(`${appUrls.tradeURL}/admin/contests/create-contest`, contest);
+export const createContest = async (formData: FormData): Promise<Contest> => {
+    const response = await api.post(`${appUrls.tradeURL}/admin/contests/create-contest`, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
     return response.data.data;
 };
-export const updateContest = async (contest: Contest): Promise<Contest> => {
-    const response = await api.post(`${appUrls.tradeURL}/admin/contests/${contest.contestId}`, contest);
+export const updateContest = async (contestId: number, formData: FormData): Promise<Contest> => {
+    const response = await api.post(`${appUrls.tradeURL}/admin/contests/${contestId}`, formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
     return response.data.data;
 };
 export const deleteContest = async (contestId: number): Promise<boolean> => {

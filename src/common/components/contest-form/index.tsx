@@ -1,5 +1,6 @@
-import {  Button, Form, Input, DatePicker } from 'antd';
-import type { GetProps } from 'antd';
+import {  Button, Form, Input, DatePicker, Upload, message, Image } from 'antd';
+import type { GetProps, UploadFile } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import utc from 'dayjs/plugin/utc';
@@ -23,9 +24,11 @@ const disabledDate: RangePickerProps['disabledDate'] = (current) => {
     return current && current < dayjs().startOf('day');
 };
 
-const ContestForm: React.FC<{ contest: Contest | null, handleSubmit: (values: any, form: any) => void }> = ({ contest, handleSubmit }) => {
+const ContestForm: React.FC<{ contest: Contest | null, handleSubmit: (formData: FormData, onSuccess: () => void) => void, isLoading: boolean }> = ({ contest, handleSubmit, isLoading }) => {
     const [confirmDay, setConfirmDay] = useState<boolean>(false);
     const [form] = Form.useForm();
+    const [file, setFile] = useState<File | null>(null);
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
     const disabledRangeTime: RangePickerProps['disabledTime'] = (current, type) => {
         const now = dayjs();
         const isToday = current?.isSame(now, "day"); // Kiểm tra có phải hôm nay không
@@ -43,23 +46,49 @@ const ContestForm: React.FC<{ contest: Contest | null, handleSubmit: (values: an
     useEffect(() => {
         console.log("Contest:", contest);
         setConfirmDay(false);
+        setFile(null);
+        setFileList([]);
         if (contest) {
             form.setFieldsValue({
                 contestName: contest.contestName,
                 contestDuration: [dayjs(contest.startDateTime), dayjs(contest.endDateTime)],
-                banner: contest.banner,
                 maxParticipants: contest.maxParticipants,
             });
         }
     }
     , [contest, form]);
+
+    const onFinish = (values: { contestName: string; contestDuration: any; maxParticipants: number }) => {
+        const formData = new FormData();
+        formData.append('contestName', values.contestName);
+        formData.append('startDateTime', values.contestDuration[0].toISOString());
+        formData.append('endDateTime', values.contestDuration[1].toISOString());
+        if (values.maxParticipants) {
+            formData.append('maxParticipants', values.maxParticipants.toString());
+        }
+
+        if (file) {
+            formData.append('image', file);
+        } else if (!contest?.banner) {
+            message.error('Please upload a contest banner');
+            return;
+        }
+
+        handleSubmit(formData, () => {
+            form.resetFields();
+            setFile(null);
+            setFileList([]);
+            setConfirmDay(false);
+        });
+    };
+
     return (
         <StyledContestForm>
             <Form
                 form={form}
                 layout="vertical"
                 className='form-style'
-                onFinish={(values) =>{ handleSubmit(values, form); setConfirmDay(false);}}
+                onFinish={onFinish}
             >
                 <Form.Item
                     label="Contest Name"
@@ -110,12 +139,34 @@ const ContestForm: React.FC<{ contest: Contest | null, handleSubmit: (values: an
                         }}
                     </Form.Item>
                 )}
-                 <Form.Item
-                    label="Contest Banner"
-                    name="banner"
-                    rules={[{ required: true, message: "Please enter a banner" }]}
-                >
-                    <Input placeholder='Input contest banner' className='input' />
+                <Form.Item label="Contest Banner" required style={{ textAlign: "left" }}>
+                    <Upload
+                        beforeUpload={(file) => {
+                            setFile(file);
+                            setFileList([{
+                                uid: file.name + Date.now(),
+                                name: file.name,
+                                status: 'done',
+                                originFileObj: file
+                            } as UploadFile]);
+                            return false;
+                        }}
+                        fileList={fileList}
+                        onRemove={() => {
+                            setFile(null);
+                            setFileList([]);
+                        }}
+                        maxCount={1}
+                    >
+                        <Button icon={<UploadOutlined />}>Select Image</Button>
+                    </Upload>
+                    {contest?.banner && !file && (
+                        <div style={{ marginTop: 8 }}>
+                            <small>Current image:</small>
+                            <br />
+                            <Image src={contest.banner} alt="current banner" width={100} />
+                        </div>
+                    )}
                 </Form.Item>
                 <Form.Item
                     label="Max number of participants"
@@ -124,7 +175,7 @@ const ContestForm: React.FC<{ contest: Contest | null, handleSubmit: (values: an
                     <Input placeholder='Input max number of participants' className='input' />
                 </Form.Item>
                 <Form.Item>
-                    <Button htmlType="submit" block className="create-btn">
+                    <Button loading={isLoading} type="primary" htmlType="submit" block className="create-btn">
                         Save
                     </Button>
                 </Form.Item>

@@ -108,49 +108,33 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
         setSelectedContest(null);
     };
 
-    const handleCreateContest = (values: any, form: any) => {
-        const contest: Contest = {
-            contestId: null,
-            contestName: values.contestName,
-            startDateTime: new Date(values.contestDuration[0]),
-            endDateTime: new Date(values.contestDuration[1]),
-            banner: values.banner,
-            maxParticipants: values.maxParticipants,
-        };
-        mutateCreate(contest, {
+    const handleCreateContest = (formData: FormData, onSuccess: () => void) => {
+        mutateCreate(formData, {
             onSuccess: () => {
                 message.success("Contest created successfully!");
-                setIsModalOpen(false); // Đóng modal sau khi tạo thành công
-                form.resetFields(); 
-                
+                setIsModalOpen(false);
+                onSuccess();
             },
             onError: (error) => {
                 message.error("Failed to create contest: " + getError(error));
-                form.resetFields();
-                setIsModalOpen(false);
             },
         });
     };
 
 
-    const handleUpdateContest = (values: any) => {
-        const contest: Contest = {
-            contestId: selectedContest?.contestId || null,
-            contestName: values.contestName,
-            startDateTime: new Date(values.contestDuration[0]),
-            endDateTime: new Date(values.contestDuration[1]),
-            banner: values.banner,
-            maxParticipants: values.maxParticipants,
-        };
-        mutateUpdate(contest, {
+    const handleUpdateContest = (formData: FormData, onSuccess: () => void) => {
+        if (!selectedContest?.contestId) {
+            message.error("Contest ID is missing");
+            return;
+        }
+        mutateUpdate({ contestId: selectedContest.contestId, formData }, {
             onSuccess: () => {
                 message.success("Contest updated successfully!");
-                setIsUpdateModalOpen(false); // Đóng modal sau khi cập nhật thành công
-                // form.resetFields(); // Clear các field trong form
+                setIsUpdateModalOpen(false);
+                onSuccess();
             },
             onError: (error) => {
                 message.error("Failed to update contest: " + error.message);
-                setIsUpdateModalOpen(false); // Đóng modal sau khi cập nhật thành công
             },
         });
     };
@@ -385,13 +369,13 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
                 title={`Create new contest`}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCancel} width={null}
-                child={<ContestForm contest={null} handleSubmit={handleCreateContest} />}
+                child={<ContestForm contest={null} handleSubmit={handleCreateContest} isLoading={false} />}
             />
             <CustomModal key='update-contest'
                 title={`Update contest`}
                 isModalOpen={isUpdateModalOpen}
                 handleCancel={handleUpdateModalCancel} width={null}
-                child={<ContestForm contest={selectedContest} handleSubmit={handleUpdateContest} />}
+                child={<ContestForm contest={selectedContest} handleSubmit={handleUpdateContest} isLoading={false} />}
             />
             <CustomModal key='contest-detail'
                 title={selectedContest?.contestName || 'Contest Details'}

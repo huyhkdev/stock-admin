@@ -56,10 +56,13 @@ export class Api {
             async (error: AxiosError) => {
                 if (!this.isExpiredTokenError(error)) {
                     // handle error
-                    window.location.href = '/login';
-                    localStorage.removeItem("accessToken");
-                    localStorage.removeItem("refreshToken");
-                    // return Promise.reject(error);
+                    console.log(error.response?.status );
+                    if(error.response?.status === 403) {
+                        window.location.href = '/login';
+                        localStorage.removeItem("accessToken");
+                        localStorage.removeItem("refreshToken");
+                        return Promise.reject(error);
+                    }
                 }
 
                 if (!this.isRefreshing) {

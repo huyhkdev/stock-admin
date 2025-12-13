@@ -61,8 +61,8 @@ export class Api {
                         window.location.href = '/login';
                         localStorage.removeItem("accessToken");
                         localStorage.removeItem("refreshToken");
-                        return Promise.reject(error);
                     }
+                   return Promise.reject(error);
                 }
 
                 if (!this.isRefreshing) {

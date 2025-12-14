@@ -49,3 +49,11 @@ export const blockUsers = async (uids: string[]): Promise<void> => {
 export const unblockUsers = async (uids: string[]): Promise<void> => {
   await api.post(`${appUrls.authenURL}/admin/un-block`, { uids });
 }
+
+export const promoteUsers = async (uids: string[]): Promise<void> => {
+  await api.post(`${appUrls.authenURL}/admin/promote`, { uids });
+}
+
+export const demoteUsers = async (uids: string[]): Promise<void> => {
+  await api.post(`${appUrls.authenURL}/admin/demote`, { uids });
+}

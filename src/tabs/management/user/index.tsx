@@ -20,7 +20,7 @@ import CustomModal from "../../../common/components/custom-modal";
 import { UserInfo } from "../../../apis/users.api";
 import moment from "moment";
 import { useInfoAssetsUser, useInfoUsers } from "../../../hook/useInfoUsers";
-import { blockUsers, unblockUsers } from "../../../apis/auth.api";
+import { blockUsers, unblockUsers, promoteUsers, demoteUsers } from "../../../apis/auth.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { filterUsersByKey, filterUsersByMultipleFields } from "../../../utils";
 import { StyledTable } from "./style";
@@ -226,6 +226,26 @@ export const UserManagement = () => {
     onError: () => message.error("Failed to unblock users"),
   });
 
+  const promoteMutation = useMutation({
+    mutationFn: promoteUsers,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setSelectedUserIds([]);
+      message.success("Users selected has been promoted to admin");
+    },
+    onError: () => message.error("Failed to promote users"),
+  });
+
+  const demoteMutation = useMutation({
+    mutationFn: demoteUsers,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setSelectedUserIds([]);
+      message.success("Users selected has been demoted to user");
+    },
+    onError: () => message.error("Failed to demote users"),
+  });
+
   const handleBlockUser = () => {
     blockMutation.mutate(selectedUserIds);
     setSelectedFilter("All");
@@ -234,6 +254,18 @@ export const UserManagement = () => {
 
   const handleUnblockUser = () => {
     unblockMutation.mutate(selectedUserIds);
+    setSelectedFilter("All");
+    setDataSearch(undefined);
+  };
+
+  const handlePromoteUser = () => {
+    promoteMutation.mutate(selectedUserIds);
+    setSelectedFilter("All");
+    setDataSearch(undefined);
+  };
+
+  const handleDemoteUser = () => {
+    demoteMutation.mutate(selectedUserIds);
     setSelectedFilter("All");
     setDataSearch(undefined);
   };
@@ -280,6 +312,21 @@ export const UserManagement = () => {
                   loading={unblockMutation.isPending}
                 >
                   Unblock User
+                </Button>
+                <Button
+                  type="primary"
+                  onClick={handlePromoteUser}
+                  loading={promoteMutation.isPending}
+                  style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
+                >
+                  Promote to Admin
+                </Button>
+                <Button
+                  onClick={handleDemoteUser}
+                  loading={demoteMutation.isPending}
+                  style={{ backgroundColor: "#faad14", borderColor: "#faad14", color: "white" }}
+                >
+                  Demote to User
                 </Button>
               </Space>
             )}

@@ -4,3 +4,4 @@ export * from './filterDataByInterval';
 export * from './formatIdOrder';
 export * from './scroll';
 export * from './getError';
+export * from './jwt';

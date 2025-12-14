@@ -22,7 +22,7 @@ import moment from "moment";
 import { useInfoAssetsUser, useInfoUsers } from "../../../hook/useInfoUsers";
 import { blockUsers, unblockUsers, promoteUsers, demoteUsers } from "../../../apis/auth.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { filterUsersByKey, filterUsersByMultipleFields } from "../../../utils";
+import { filterUsersByKey, filterUsersByMultipleFields, getCurrentUserUid } from "../../../utils";
 import { StyledTable } from "./style";
 
 const { Option } = Select;
@@ -47,6 +47,9 @@ export const UserManagement = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
 
+  // Get current logged-in user's uid
+  const currentUserUid = getCurrentUserUid();
+
   const showModal = (record: UserInfo) => {
     setSelectedUser(record);
     setUidSelected(record.id);
@@ -59,6 +62,12 @@ export const UserManagement = () => {
   };
 
   const handleCheckboxChange = (e: CheckboxChangeEvent, userId: string) => {
+    // Prevent selecting current user
+    if (userId === currentUserUid) {
+      message.warning("You cannot perform actions on yourself");
+      return;
+    }
+    
     if (e.target.checked) {
       setSelectedUserIds((prev) => [...prev, userId]);
     } else {
@@ -76,6 +85,7 @@ export const UserManagement = () => {
           key={record.id}
           onChange={(e) => handleCheckboxChange(e, record.id)}
           checked={selectedUserIds.includes(record.id)}
+          disabled={record.id === currentUserUid}
         />
       ),
       width: 20,

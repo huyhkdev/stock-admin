@@ -43,6 +43,7 @@ export const UserManagement = () => {
   const [selectedFilter, setSelectedFilter] = useState<OptionType>("All");
 
   const [dataSearch, setDataSearch] = useState<UserInfo[] | undefined>();
+  const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(20);
 
@@ -184,7 +185,31 @@ export const UserManagement = () => {
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    setSearchValue(value);
     setDataSearch(users ? filterUsersByMultipleFields(users, value) : []);
+  };
+
+  // Re-apply filters after data refresh
+  const reapplyFilters = (updatedUsers: UserInfo[]) => {
+    if (searchValue) {
+      setDataSearch(filterUsersByMultipleFields(updatedUsers, searchValue));
+    } else {
+      switch (selectedFilter) {
+        case "Active User":
+          setDataSearch(filterUsersByKey(updatedUsers, "state", "active"));
+          break;
+        case "Inactive User":
+          setDataSearch(filterUsersByKey(updatedUsers, "state", "pending"));
+          break;
+        case "Banned User":
+          setDataSearch(filterUsersByKey(updatedUsers, "role", "blocker"));
+          break;
+        case "All":
+        default:
+          setDataSearch(updatedUsers);
+          break;
+      }
+    }
   };
 
   const handleFilterUser = (value: OptionType) => {
@@ -208,8 +233,10 @@ export const UserManagement = () => {
 
   const blockMutation = useMutation({
     mutationFn: blockUsers,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+      const updatedUsers = queryClient.getQueryData<UserInfo[]>(["users"]);
+      if (updatedUsers) reapplyFilters(updatedUsers);
       setSelectedUserIds([]);
       message.success("Users selected has been blocked");
     },
@@ -218,8 +245,10 @@ export const UserManagement = () => {
 
   const unblockMutation = useMutation({
     mutationFn: unblockUsers,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+      const updatedUsers = queryClient.getQueryData<UserInfo[]>(["users"]);
+      if (updatedUsers) reapplyFilters(updatedUsers);
       setSelectedUserIds([]);
       message.success("Users selected has been active again");
     },
@@ -228,8 +257,10 @@ export const UserManagement = () => {
 
   const promoteMutation = useMutation({
     mutationFn: promoteUsers,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+      const updatedUsers = queryClient.getQueryData<UserInfo[]>(["users"]);
+      if (updatedUsers) reapplyFilters(updatedUsers);
       setSelectedUserIds([]);
       message.success("Users selected has been promoted to admin");
     },
@@ -238,8 +269,10 @@ export const UserManagement = () => {
 
   const demoteMutation = useMutation({
     mutationFn: demoteUsers,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["users"] });
+      const updatedUsers = queryClient.getQueryData<UserInfo[]>(["users"]);
+      if (updatedUsers) reapplyFilters(updatedUsers);
       setSelectedUserIds([]);
       message.success("Users selected has been demoted to user");
     },
@@ -248,27 +281,26 @@ export const UserManagement = () => {
 
   const handleBlockUser = () => {
     blockMutation.mutate(selectedUserIds);
-    setSelectedFilter("All");
-    setDataSearch(undefined);
   };
 
   const handleUnblockUser = () => {
     unblockMutation.mutate(selectedUserIds);
-    setSelectedFilter("All");
-    setDataSearch(undefined);
   };
 
   const handlePromoteUser = () => {
     promoteMutation.mutate(selectedUserIds);
-    setSelectedFilter("All");
-    setDataSearch(undefined);
   };
 
   const handleDemoteUser = () => {
     demoteMutation.mutate(selectedUserIds);
-    setSelectedFilter("All");
-    setDataSearch(undefined);
   };
+
+  // Check selected users state to show conditional buttons
+  const selectedUsersData = users?.filter(user => selectedUserIds.includes(user.id)) || [];
+  const hasBlockedUsers = selectedUsersData.some(user => user.role === "blocker");
+  const hasNonBlockedUsers = selectedUsersData.some(user => user.role !== "blocker");
+  const hasAdminUsers = selectedUsersData.some(user => user.role === "admin");
+  const hasNonAdminUsers = selectedUsersData.some(user => user.role !== "admin");
   return (
     <div>
       <Flex vertical gap={20}>
@@ -294,40 +326,49 @@ export const UserManagement = () => {
               placeholder="Email or UID"
               prefix={<UserOutlined style={{ color: "rgba(0,0,0,.25)" }} />}
               style={{ width: 200 }}
+              value={searchValue}
               onChange={onChange}
             />
             {selectedUserIds.length > 0 && (
               <Space>
-                <Button
-                  danger
-                  type="primary"
-                  onClick={handleBlockUser}
-                  loading={blockMutation.isPending}
-                >
-                  Block User
-                </Button>
-                <Button
-                  type="primary"
-                  onClick={handleUnblockUser}
-                  loading={unblockMutation.isPending}
-                >
-                  Unblock User
-                </Button>
-                <Button
-                  type="primary"
-                  onClick={handlePromoteUser}
-                  loading={promoteMutation.isPending}
-                  style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
-                >
-                  Promote to Admin
-                </Button>
-                <Button
-                  onClick={handleDemoteUser}
-                  loading={demoteMutation.isPending}
-                  style={{ backgroundColor: "#faad14", borderColor: "#faad14", color: "white" }}
-                >
-                  Demote to User
-                </Button>
+                {hasNonBlockedUsers && (
+                  <Button
+                    danger
+                    type="primary"
+                    onClick={handleBlockUser}
+                    loading={blockMutation.isPending}
+                  >
+                    Block User
+                  </Button>
+                )}
+                {hasBlockedUsers && (
+                  <Button
+                    type="primary"
+                    onClick={handleUnblockUser}
+                    loading={unblockMutation.isPending}
+                  >
+                    Unblock User
+                  </Button>
+                )}
+                {hasNonAdminUsers && (
+                  <Button
+                    type="primary"
+                    onClick={handlePromoteUser}
+                    loading={promoteMutation.isPending}
+                    style={{ backgroundColor: "#52c41a", borderColor: "#52c41a" }}
+                  >
+                    Promote to Admin
+                  </Button>
+                )}
+                {hasAdminUsers && (
+                  <Button
+                    onClick={handleDemoteUser}
+                    loading={demoteMutation.isPending}
+                    style={{ backgroundColor: "#faad14", borderColor: "#faad14", color: "white" }}
+                  >
+                    Demote to User
+                  </Button>
+                )}
               </Space>
             )}
           </Space>

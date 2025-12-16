@@ -42,8 +42,8 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [selectedContest, setSelectedContest] = useState<Contest | null>(null);
-    const { mutate: mutateCreate } = useCreateContest();
-    const { mutate: mutateUpdate } = useUpdateContest();
+    const { mutate: mutateCreate, isPending: isCreating } = useCreateContest();
+    const { mutate: mutateUpdate, isPending: isUpdating } = useUpdateContest();
     const { mutate: mutateDelete } = useDeleteContest();
     const [dataSource, setDataSource] = useState<Contest[]>(filteredContests);
     const [loadAgain, setLoadAgain] = useState(false);
@@ -134,7 +134,7 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
                 onSuccess();
             },
             onError: (error) => {
-                message.error("Failed to update contest: " + error.message);
+                message.error("Failed to update contest: " + getError(error));
             },
         });
     };
@@ -145,7 +145,7 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
                 message.success("Contest deleted successfully!");
             },
             onError: (error) => {
-                message.error("Failed to delete contest: " + error.message);
+                message.error("Failed to delete contest: " + getError(error));
             },
         });
     };
@@ -369,13 +369,13 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
                 title={`Create new contest`}
                 isModalOpen={isModalOpen}
                 handleCancel={handleCancel} width={null}
-                child={<ContestForm contest={null} handleSubmit={handleCreateContest} isLoading={false} />}
+                child={<ContestForm contest={null} handleSubmit={handleCreateContest} isLoading={isCreating} />}
             />
             <CustomModal key='update-contest'
                 title={`Update contest`}
                 isModalOpen={isUpdateModalOpen}
                 handleCancel={handleUpdateModalCancel} width={null}
-                child={<ContestForm contest={selectedContest} handleSubmit={handleUpdateContest} isLoading={false} />}
+                child={<ContestForm contest={selectedContest} handleSubmit={handleUpdateContest} isLoading={isUpdating} />}
             />
             <CustomModal key='contest-detail'
                 title={selectedContest?.contestName || 'Contest Details'}

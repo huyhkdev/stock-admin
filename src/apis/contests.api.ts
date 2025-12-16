@@ -8,6 +8,8 @@ export interface Contest {
     endDateTime: Date;
     banner: string;
     maxParticipants: number;
+    isStrict?: boolean;
+    allowJoinEmails?: string[];
 }
 
 export interface ContestParticipant {

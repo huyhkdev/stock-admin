@@ -19,13 +19,13 @@ const StyledTableParticipant = styled.div`
 
 const columns: ColumnsType<ContestParticipant> = [
   {
-    title: 'User Id',
-    dataIndex: 'uid',
-    key: 'uid',
-    render: (fullName: string) => (
+    title: 'Username',
+    dataIndex: 'participantUsername',
+    key: 'participantUsername',
+    render: (username: string, record: ContestParticipant) => (
       <Space className="clickable-row">
-        <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" />
-        {fullName}
+        <Avatar src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${record.uid}`} />
+        {username}
       </Space>
     ),
   },
@@ -34,7 +34,11 @@ const columns: ColumnsType<ContestParticipant> = [
     dataIndex: 'participantName',
     key: 'participantName',
   },
-
+  {
+    title: 'Email',
+    dataIndex: 'participantEmail',
+    key: 'participantEmail',
+  },
 ];
 
 const ParticipantListComponent = ({ participants, loading }: ParticipantListComponentProps) => {
@@ -74,7 +78,7 @@ const ParticipantListComponent = ({ participants, loading }: ParticipantListComp
           </Space>
           <StyledTableParticipant>
             <Table
-              rowKey={(record) => record.contestId.toString()}
+              rowKey={(record) => `${record.contestId}-${record.uid}`}
               columns={columns}
               dataSource={participants}
               bordered

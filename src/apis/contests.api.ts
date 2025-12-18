@@ -15,8 +15,10 @@ export interface Contest {
 export interface ContestParticipant {
     contestId: number,
     uid: string,
-    initialBalance: number,
-    finalBalance: number,
+    rankId: number | null,
+    participantName: string,
+    participantEmail: string,
+    participantUsername: string,
 }
 export interface TopUser{
     uid: string;
@@ -25,6 +27,41 @@ export interface TopUser{
     rank: number;
     increasedAmount: number;
     ROIC: number;
+    username?: string;
+    email?: string;
+    debug?: {
+        totalProfit: number;
+        totalROIC: number;
+        totalRealizedPnL: number;
+        totalUnrealizedPnL: number;
+        totalInvested: number;
+        tickerCount: number;
+        tickerDetails: Array<{
+            ticker: string;
+            position: number;
+            avgCost: number;
+            currentPrice: number;
+            totalBuyValue: number;
+            totalSellValue: number;
+            realizedPnL: number;
+            unrealizedPnL: number;
+            totalPnL: number;
+        }>;
+    };
+}
+
+export interface ContestDetailResponse {
+    contestId: number;
+    startDateTime: string;
+    contestName: string;
+    maxParticipants: number;
+    endDateTime: string;
+    banner: string;
+    isStrict: boolean;
+    creatorUid: string;
+    participants: ContestParticipant[];
+    allowJoinEmails: string[];
+    rankList: TopUser[];
 }
  export const getAllContests = async (): Promise<Contest[]> => {
         const response = await api.get(`${appUrls.tradeURL}/contests`);
@@ -67,5 +104,10 @@ export const getRankByContest = async (contestId: number): Promise<TopUser[]> =>
 };
 export const getCurrentRankByContest = async (contestId: number): Promise<TopUser[]> => {
     const response = await api.get(`${appUrls.tradeURL}/current-rank/contests/${contestId}`);
+    return response.data.data;
+};
+
+export const getContestDetail = async (contestId: number): Promise<ContestDetailResponse> => {
+    const response = await api.get(`${appUrls.tradeURL}/contests/${contestId}`);
     return response.data.data;
 };

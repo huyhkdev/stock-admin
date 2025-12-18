@@ -18,26 +18,10 @@ const StyledTableRank = styled.div`
 `;
 const columns: ColumnsType<TopUser> = [
   {
-    title: 'User Id',
-    dataIndex: 'uid',
-    key: 'uid',
-    render: (fullName: string) => (
-      <Space className="clickable-row" title="Click to view details">
-        <Avatar src="https://api.dicebear.com/7.x/miniavs/svg?seed=1" />
-        {fullName}
-      </Space>
-    ),
-  },
-  {
-    title: 'Full Name',
-    dataIndex: 'fullName',
-    key: 'fullName',
-  },
-
-  {
     title: 'Rank',
     dataIndex: 'rank',
     key: 'rank',
+    width: 80,
     render:(rank:number)=>{return  (
       <Tooltip title={`Rank ${rank}`}>
       <span
@@ -58,6 +42,23 @@ const columns: ColumnsType<TopUser> = [
     </Tooltip>)}
   },
   {
+    title: 'Username',
+    dataIndex: 'username',
+    key: 'username',
+    render: (username: string, record: TopUser) => (
+      <Space className="clickable-row" title="Click to view details">
+        <Avatar src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${record.uid}`} />
+        {username || 'N/A'}
+      </Space>
+    ),
+  },
+  {
+    title: 'Email',
+    dataIndex: 'email',
+    key: 'email',
+    render: (email: string) => email || 'N/A',
+  },
+  {
     title: 'Created At',
     dataIndex: 'createdAt',
     key: 'createdAt',
@@ -70,7 +71,7 @@ const columns: ColumnsType<TopUser> = [
     render: (increasedAmount: number) => (
       <span style={{ color: increasedAmount > 0 ? 'green' : 'red' }}>
         {increasedAmount > 0 ? '+' : ''}
-        {increasedAmount}
+        {increasedAmount.toLocaleString()}
       </span>
     ),
   },
@@ -78,9 +79,9 @@ const columns: ColumnsType<TopUser> = [
     title: 'ROIC',
     dataIndex: 'ROIC',
     key: 'ROIC',
-    render: (ROIC: number) => (
+    render: (ROIC: number, record: TopUser) => (
       <span style={{ color: ROIC > 0 ? 'green' : 'red' }}>
-      { Math.abs(ROIC).toFixed(2) + '%'}
+    {((record.increasedAmount/50000000)*100).toFixed(2)}%
       </span>)
   },
 ];
@@ -111,7 +112,7 @@ const RankListComponent = ({ topUsers, loading }: RankListComponentProps) => {
           
           <StyledTableRank>
             <Table
-              rowKey={(record) => record.contestId.toString()}
+              rowKey={(record) => `${record.contestId}-${record.uid}`}
               columns={columns}
               dataSource={topUsers}
               bordered

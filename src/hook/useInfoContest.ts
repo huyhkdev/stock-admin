@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createContest, deleteContest, getAllContests, getContestById, getContestParticipantsByContestId, getCurrentRankByContest, getRankByContest, updateContest } from "../apis/contests.api";
+import { createContest, deleteContest, getAllContests, getContestById, getContestDetail, getContestParticipantsByContestId, getCurrentRankByContest, getRankByContest, updateContest } from "../apis/contests.api";
 
 
 // export const useInfoContests = (page: number, limit: number) => {
@@ -41,6 +41,14 @@ export const useInfoFinalRank = (contestId: number) => {
   return useQuery({
       queryKey: ["finalRank", contestId],
       queryFn: () => getRankByContest(contestId),
+      enabled: !!contestId,
+  });
+};
+
+export const useInfoContestDetail = (contestId: number) => {
+  return useQuery({
+      queryKey: ["contestDetail", contestId],
+      queryFn: () => getContestDetail(contestId),
       enabled: !!contestId,
   });
 };

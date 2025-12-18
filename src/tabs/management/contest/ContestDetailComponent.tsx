@@ -1,36 +1,47 @@
-import DetailBarChart from "./contest-detail-components/ContestDetailBarChartComponent";
 import ContestStatisticContainer from "./contest-detail-components/ContestDetailStatisticComponent";
 import ParticipantListComponent from "./contest-detail-components/ParticipantListComponent";
-import { Flex } from "antd";
-import { useInfoContestParticipants, useInfoCurrentRank, useInfoFinalRank } from "../../../hook/useInfoContest";
-import { Contest, TopUser } from "../../../apis/contests.api";
+import { Flex, Spin } from "antd";
+import { useInfoContestDetail } from "../../../hook/useInfoContest";
+import { Contest } from "../../../apis/contests.api";
 import RankListComponent from "./contest-detail-components/RankListComponent";
-import { useEffect, useState } from "react";
 import CountDownCard from "./contest-detail-components/CountDownCard";
 
 
 const ContestDetailComponent: React.FC<{contest:Contest | null}> = ({ contest }) => {
-    ;
-    const isEnded= new Date(contest?.endDateTime ?? 0) <= new Date();
-    const isStarted = new Date(contest?.startDateTime ?? 0) <= new Date();
-    const {data:participants,isLoading:loading } = useInfoContestParticipants(contest!.contestId!);
-    const {data:currentRank } = useInfoCurrentRank(contest!.contestId!);
-    const {data:finalRank } = useInfoFinalRank(contest!.contestId!);
-    const [rank,setRank] = useState<TopUser[]>();
-   useEffect(()=>{
-    if(!isEnded && isStarted){
-        setRank(currentRank);
-    }else if(isEnded){
-        setRank(finalRank);
+    const { data: contestDetail, isLoading } = useInfoContestDetail(contest?.contestId ?? 0);
+
+    if (isLoading) {
+        return (
+            <Flex justify="center" align="center" style={{ minHeight: '400px' }}>
+                <Spin size="large" />
+            </Flex>
+        );
     }
-   },[currentRank,finalRank,participants])
+
+    if (!contestDetail) {
+        return null;
+    }
+
+    // Convert contestDetail to Contest format for CountDownCard
+    const contestData: Contest = {
+        contestId: contestDetail.contestId,
+        contestName: contestDetail.contestName,
+        startDateTime: new Date(contestDetail.startDateTime),
+        endDateTime: new Date(contestDetail.endDateTime),
+        banner: contestDetail.banner,
+        maxParticipants: contestDetail.maxParticipants,
+        isStrict: contestDetail.isStrict,
+        allowJoinEmails: contestDetail.allowJoinEmails,
+    };
+
     return (
         <Flex vertical gap={24} style={{  margin: '1rem 1rem', backgroundColor: '#F4F4F4', padding: '1rem', borderRadius: '10px' }}>
-           {contest && <CountDownCard contest={contest}/>}
-            {participants && <ContestStatisticContainer participants={participants} contest={contest!} />} 
-            { (rank?.length ?? 0) > 0 && <RankListComponent topUsers={rank!} loading={false} />}
-            {participants && <DetailBarChart participants={participants} />} 
-             <ParticipantListComponent participants={participants!} loading={loading} />
+           <CountDownCard contest={contestData}/>
+            <ContestStatisticContainer participants={contestDetail.participants} contest={contestData} /> 
+            {contestDetail.rankList && contestDetail.rankList.length > 0 && (
+                <RankListComponent topUsers={contestDetail.rankList} loading={false} />
+            )}
+            <ParticipantListComponent participants={contestDetail.participants} loading={false} />
         </Flex>
     );
 }

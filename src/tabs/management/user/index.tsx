@@ -342,23 +342,23 @@ export const UserManagement = () => {
             {selectedUserIds.length > 0 && (
               <Space>
                 {hasNonBlockedUsers && (
-                  <Button
-                    danger
-                    type="primary"
-                    onClick={handleBlockUser}
-                    loading={blockMutation.isPending}
-                  >
-                    Block User
-                  </Button>
+                <Button
+                  danger
+                  type="primary"
+                  onClick={handleBlockUser}
+                  loading={blockMutation.isPending}
+                >
+                  Block User
+                </Button>
                 )}
                 {hasBlockedUsers && (
-                  <Button
-                    type="primary"
-                    onClick={handleUnblockUser}
-                    loading={unblockMutation.isPending}
-                  >
-                    Unblock User
-                  </Button>
+                <Button
+                  type="primary"
+                  onClick={handleUnblockUser}
+                  loading={unblockMutation.isPending}
+                >
+                  Unblock User
+                </Button>
                 )}
                 {hasNonAdminUsers && (
                   <Button

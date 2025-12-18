@@ -241,8 +241,8 @@ const ContestForm: React.FC<{ contest: Contest | null, handleSubmit: (formData: 
             // Send emails as JSON array
             formData.append('allowJoinEmails', JSON.stringify(uniqueEmails));
         } else {
-            if (values.maxParticipants) {
-                formData.append('maxParticipants', values.maxParticipants.toString());
+        if (values.maxParticipants) {
+            formData.append('maxParticipants', values.maxParticipants.toString());
             }
         }
 
@@ -366,12 +366,21 @@ const ContestForm: React.FC<{ contest: Contest | null, handleSubmit: (formData: 
                 </Form.Item>
 
                 {!isStrict ? (
-                    <Form.Item
-                        label="Max number of participants"
-                        name="maxParticipants"
-                    >
-                        <Input placeholder='Input max number of participants' className='input' />
-                    </Form.Item>
+                <Form.Item
+                    label="Max number of participants"
+                    name="maxParticipants"
+                    tooltip="Enter 0 for unlimited participants"
+                >
+                    <Input 
+                        placeholder='Input max number of participants (0 for unlimited)' 
+                        className='input'
+                        type="number"
+                        min={0}
+                    />
+                    <small style={{ color: '#888', marginTop: 4, display: 'block' }}>
+                        {form.getFieldValue('maxParticipants') === 0 ? '∞ Unlimited participants' : ''}
+                    </small>
+                </Form.Item>
                 ) : (
                     <Space direction="vertical" style={{ width: '100%' }} size="middle">
                         <Alert

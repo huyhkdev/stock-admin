@@ -57,3 +57,7 @@ export const promoteUsers = async (uids: string[]): Promise<void> => {
 export const demoteUsers = async (uids: string[]): Promise<void> => {
   await api.post(`${appUrls.authenURL}/admin/demote`, { uids });
 }
+
+export const resetWallet = async (uid: string, balance: number): Promise<void> => {
+  await api.post(`${appUrls.tradeURL}/admin/wallet/reset/${uid}`, { balance });
+}

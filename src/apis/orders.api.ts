@@ -64,8 +64,12 @@ export interface OrderDetailResponse {
 }
 
 export interface ExportOrdersParams {
-  startDate: string; // ISO string
-  endDate: string;   // ISO string
+  side?: OrderSideType;
+  type?: OrderMarketType;
+  status?: OrderStatusType;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 export const getAllInfoOrders = async (
@@ -76,6 +80,8 @@ export const getAllInfoOrders = async (
     type?: OrderMarketType;
     status?: OrderStatusType;
     search?: string;
+    startDate?: string;
+    endDate?: string;
   }
 ): Promise<OrderListResponse> => {
   const queryParams: Record<string, string | number> = {
@@ -87,6 +93,8 @@ export const getAllInfoOrders = async (
   if (params?.type) queryParams.type = params.type;
   if (params?.status) queryParams.status = params.status;
   if (params?.search) queryParams.search = params.search;
+  if (params?.startDate) queryParams.startDate = params.startDate;
+  if (params?.endDate) queryParams.endDate = params.endDate;
 
   const response = await api.get(`${appUrls.tradeURL}/admin/all-order`, {
     params: queryParams,
@@ -141,13 +149,19 @@ export const getOrderById = async (orderId: string): Promise<OrderInfo | null> =
 export const exportAllOrdersCSV = async (
   params: ExportOrdersParams
 ): Promise<Blob> => {
+  const queryParams: Record<string, string> = {};
+  
+  if (params.side) queryParams.side = params.side;
+  if (params.type) queryParams.type = params.type;
+  if (params.status) queryParams.status = params.status;
+  if (params.search) queryParams.search = params.search;
+  if (params.startDate) queryParams.startDate = params.startDate;
+  if (params.endDate) queryParams.endDate = params.endDate;
+
   const response = await api.get(
     `${appUrls.tradeURL}/admin/all-order/export`,
     {
-      params: {
-        startDate: params.startDate,
-        endDate: params.endDate,
-      },
+      params: queryParams,
       responseType: 'blob',
     }
   );

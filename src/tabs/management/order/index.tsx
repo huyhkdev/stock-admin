@@ -14,8 +14,8 @@ export const OrderManagement = () => {
   const [type, setType] = useState<string>("All");
   const [status, setStatus] = useState<string>("All");
   const [search, setSearch] = useState<string>("");
-  const [exportStartDate, setExportStartDate] = useState<string | undefined>(undefined);
-  const [exportEndDate, setExportEndDate] = useState<string | undefined>(undefined);
+  const [startDate, setStartDate] = useState<string | undefined>(undefined);
+  const [endDate, setEndDate] = useState<string | undefined>(undefined);
   const [exporting, setExporting] = useState<boolean>(false);
 
   const { data, isLoading, isFetching } = useInfoOrders({
@@ -25,6 +25,8 @@ export const OrderManagement = () => {
     type: type === "All" ? undefined : (type as any),
     status: status === "All" ? undefined : (status as any),
     search: search || undefined,
+    startDate: startDate || undefined,
+    endDate: endDate || undefined,
   });
   const orders = data?.items;
 
@@ -57,30 +59,42 @@ export const OrderManagement = () => {
         onStatusChange={(v) => { setPage(1); setStatus(v); }}
         search={search}
         onSearchChange={(v) => { setPage(1); setSearch(v); }}
-        exportStartDate={exportStartDate}
-        exportEndDate={exportEndDate}
+        startDate={startDate}
+        endDate={endDate}
         onDateRangeChange={(start, end) => {
-          setExportStartDate(start);
-          setExportEndDate(end);
+          setPage(1);
+          setStartDate(start);
+          setEndDate(end);
         }}
         onExport={async () => {
-          if (!exportStartDate || !exportEndDate) {
-            message.warning("Please select a date range first");
-            return;
-          }
           try {
             setExporting(true);
-            const startDateStr = dayjs(exportStartDate).format('YYYY-MM-DD');
-            const endDateStr = dayjs(exportEndDate).format('YYYY-MM-DD');
-            const blob = await exportAllOrdersCSV({ startDate: startDateStr, endDate: endDateStr });
+            const params: any = {};
+            if (side !== "All") params.side = side;
+            if (type !== "All") params.type = type;
+            if (status !== "All") params.status = status;
+            if (search) params.search = search;
+            if (startDate) params.startDate = dayjs(startDate).format('YYYY-MM-DD');
+            if (endDate) params.endDate = dayjs(endDate).format('YYYY-MM-DD');
+
+            const blob = await exportAllOrdersCSV(params);
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `orders_${startDateStr}_to_${endDateStr}.csv`;
+            
+            // Generate filename
+            const timestamp = new Date().toISOString().split('T')[0];
+            let filename = `orders_${timestamp}`;
+            if (startDate && endDate) {
+              filename = `orders_${dayjs(startDate).format('YYYY-MM-DD')}_to_${dayjs(endDate).format('YYYY-MM-DD')}`;
+            }
+            link.download = `${filename}.csv`;
+            
             document.body.appendChild(link);
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
+            message.success("Export successful!");
           } catch (err) {
             message.error("Failed to export CSV");
           } finally {

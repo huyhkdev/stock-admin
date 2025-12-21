@@ -4,12 +4,12 @@ import { Button, Dropdown, Input, MenuProps, Select, Space, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { SearchProps } from "antd/es/input";
 import { useEffect, useState } from "react";
-import { AuditOutlined, DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons';
+import { AuditOutlined, DeleteOutlined, EditOutlined, MoreOutlined, FileTextOutlined, TrophyOutlined } from '@ant-design/icons';
 import { filterType } from "./constants";
 import CustomModal from "../../../common/components/custom-modal";
 import ContestForm from "../../../common/components/contest-form";
 import ContestDetailComponent from "./ContestDetailComponent";
-import { Contest } from "../../../apis/contests.api";
+import { Contest, exportContestOrders, exportContestRanks } from "../../../apis/contests.api";
 import { useCreateContest, useDeleteContest, useUpdateContest } from "../../../hook/useInfoContest";
 import styled from 'styled-components';
 import { filterContestsByKey, getError } from "../../../utils";
@@ -148,6 +148,42 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
                 message.error("Failed to delete contest: " + getError(error));
             },
         });
+    };
+
+    const handleExportOrders = async (contestId: number) => {
+        try {
+            message.loading({ content: 'Exporting orders...', key: 'export-orders' });
+            const blob = await exportContestOrders(contestId);
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `contest_${contestId}_orders.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            message.success({ content: 'Orders exported successfully!', key: 'export-orders' });
+        } catch (error) {
+            message.error({ content: 'Failed to export orders: ' + getError(error), key: 'export-orders' });
+        }
+    };
+
+    const handleExportRanks = async (contestId: number) => {
+        try {
+            message.loading({ content: 'Exporting ranks...', key: 'export-ranks' });
+            const blob = await exportContestRanks(contestId);
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `contest_${contestId}_ranks.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            message.success({ content: 'Ranks exported successfully!', key: 'export-ranks' });
+        } catch (error) {
+            message.error({ content: 'Failed to export ranks: ' + getError(error), key: 'export-ranks' });
+        }
     };
     const handleFilterChange = (value: string) => {
         setFilterOption(value);
@@ -301,6 +337,25 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
                         icon: <DeleteOutlined />,
                         onClick: () => {
                             if (!isDisabled) handleDeleteContest(record.contestId!);
+                        },
+                    },
+                    {
+                        type: 'divider',
+                    },
+                    {
+                        key: '3',
+                        label: "Export Orders",
+                        icon: <FileTextOutlined />,
+                        onClick: () => {
+                            handleExportOrders(record.contestId!);
+                        },
+                    },
+                    {
+                        key: '4',
+                        label: "Export Ranks",
+                        icon: <TrophyOutlined />,
+                        onClick: () => {
+                            handleExportRanks(record.contestId!);
                         },
                     },
                 ];

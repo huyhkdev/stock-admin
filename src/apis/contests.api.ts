@@ -111,3 +111,17 @@ export const getContestDetail = async (contestId: number): Promise<ContestDetail
     const response = await api.get(`${appUrls.tradeURL}/contests/${contestId}`);
     return response.data.data;
 };
+
+export const exportContestOrders = async (contestId: number): Promise<Blob> => {
+    const response = await api.get(`${appUrls.tradeURL}/admin/contest/${contestId}/orders/export`, {
+        responseType: 'blob',
+    });
+    return response.data;
+};
+
+export const exportContestRanks = async (contestId: number): Promise<Blob> => {
+    const response = await api.get(`${appUrls.tradeURL}/admin/contest/${contestId}/ranks/export`, {
+        responseType: 'blob',
+    });
+    return response.data;
+};

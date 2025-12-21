@@ -10,17 +10,19 @@ import {
   CheckboxChangeEvent,
   Flex,
   message,
+  Modal,
+  InputNumber,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { UserDetailContent, UserStatisticComponent } from "./components";
-import { UserOutlined } from "@ant-design/icons";
+import { UserOutlined, WalletOutlined } from "@ant-design/icons";
 import Search from "antd/es/input/Search";
 import { filterType } from "./constants";
 import CustomModal from "../../../common/components/custom-modal";
 import { UserInfo } from "../../../apis/users.api";
 import moment from "moment";
 import { useInfoAssetsUser, useInfoUsers } from "../../../hook/useInfoUsers";
-import { blockUsers, unblockUsers, promoteUsers, demoteUsers } from "../../../apis/auth.api";
+import { blockUsers, unblockUsers, promoteUsers, demoteUsers, resetWallet } from "../../../apis/auth.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { filterUsersByKey, filterUsersByMultipleFields, getCurrentUserUid } from "../../../utils";
 import { StyledTable } from "./style";
@@ -37,6 +39,9 @@ export const UserManagement = () => {
   const { data: assets, isLoading: loadingAssetsUser } = useInfoAssetsUser(uidSelected);
   
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isResetWalletModalOpen, setIsResetWalletModalOpen] = useState<boolean>(false);
+  const [resetWalletUser, setResetWalletUser] = useState<UserInfo | null>(null);
+  const [newBalance, setNewBalance] = useState<number>(500000000); // Default 500M
 
   const [selectedUser, setSelectedUser] = useState<UserInfo | null>(null);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
@@ -170,20 +175,24 @@ export const UserManagement = () => {
       render: (createdAt: Date) =>
         moment(createdAt).format("YYYY-MM-DD HH:mm:ss"),
     },
-    // {
-    //   title: "Updated At",
-    //   dataIndex: "updatedAt",
-    //   key: "updatedAt",
-    //   sorter: (a, b) =>
-    //     new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime(),
-    //   render: (updatedAt: Date) =>
-    //     moment(updatedAt).format("YYYY-MM-DD HH:mm:ss"),
-    // },
-    // {
-    //     title: 'Balance',
-    //     dataIndex: 'balance',
-    //     key: 'balance',
-    // },
+    {
+      title: "Actions",
+      key: "actions",
+      width: 200,
+      render: (_: any, record: UserInfo) => (
+        <Space>
+          <Button
+            type="link"
+            size="small"
+            icon={<WalletOutlined />}
+            onClick={() => showResetWalletModal(record)}
+            disabled={record.id === currentUserUid}
+          >
+            Reset Wallet
+          </Button>
+        </Space>
+      ),
+    },
   ];
   const handleTableChange = (pagination: {
     current: number;
@@ -303,6 +312,47 @@ export const UserManagement = () => {
 
   const handleDemoteUser = () => {
     demoteMutation.mutate(selectedUserIds);
+  };
+
+  // Reset Wallet Mutation
+  const resetWalletMutation = useMutation({
+    mutationFn: ({ uid, balance }: { uid: string; balance: number }) => resetWallet(uid, balance),
+    onSuccess: () => {
+      message.success("Wallet reset successfully");
+      // Invalidate all user-related queries
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["userAssets"] });
+      queryClient.invalidateQueries({ queryKey: ["userStatistic"] });
+      setIsResetWalletModalOpen(false);
+      setResetWalletUser(null);
+      setNewBalance(500000000); // Reset to default
+    },
+    onError: (error: any) => {
+      message.error(`Failed to reset wallet: ${error?.response?.data?.errors?.[0]?.errorMessage || 'Unknown error'}`);
+    },
+  });
+
+  const showResetWalletModal = (user: UserInfo) => {
+    setResetWalletUser(user);
+    setIsResetWalletModalOpen(true);
+  };
+
+  const handleResetWallet = () => {
+    if (!resetWalletUser) return;
+    
+    Modal.confirm({
+      title: "Confirm Reset Wallet",
+      content: `Are you sure you want to reset wallet for ${resetWalletUser.fullName || resetWalletUser.email} to ${newBalance.toLocaleString()} VND?`,
+      onOk: () => {
+        resetWalletMutation.mutate({ uid: resetWalletUser.id, balance: newBalance });
+      },
+    });
+  };
+
+  const handleCancelResetWallet = () => {
+    setIsResetWalletModalOpen(false);
+    setResetWalletUser(null);
+    setNewBalance(500000000);
   };
 
   // Check selected users state to show conditional buttons
@@ -427,6 +477,39 @@ export const UserManagement = () => {
             }
           />
         )}
+
+        {/* Reset Wallet Modal */}
+        <Modal
+          title="Reset Wallet Balance"
+          open={isResetWalletModalOpen}
+          onOk={handleResetWallet}
+          onCancel={handleCancelResetWallet}
+          okText="Reset"
+          okButtonProps={{ loading: resetWalletMutation.isPending }}
+        >
+          <Space direction="vertical" style={{ width: '100%' }} size="large">
+            <div>
+              <p><strong>User:</strong> {resetWalletUser?.fullName || resetWalletUser?.email}</p>
+              <p><strong>UID:</strong> {resetWalletUser?.id}</p>
+            </div>
+            <div>
+              <p style={{ marginBottom: 8 }}><strong>New Balance (VND):</strong></p>
+              <InputNumber
+                style={{ width: '100%' }}
+                min={0}
+                step={1000000}
+                value={newBalance}
+                onChange={(value) => setNewBalance(value || 0)}
+                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                parser={(value) => Number(value!.replace(/\$\s?|(,*)/g, ''))}
+                placeholder="Enter new balance"
+              />
+              <p style={{ marginTop: 8, color: '#888', fontSize: '12px' }}>
+                Default: 500,000,000 VND
+              </p>
+            </div>
+          </Space>
+        </Modal>
       </Flex>
     </div>
   );

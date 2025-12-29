@@ -81,7 +81,7 @@ const columns: ColumnsType<TopUser> = [
     key: 'ROIC',
     render: (ROIC: number, record: TopUser) => (
       <span style={{ color: ROIC > 0 ? 'green' : 'red' }}>
-    {((record.increasedAmount/50000000)*100).toFixed(2)}%
+    {((record.increasedAmount/((record?.debug?.totalInvested) || 500000000))*100).toFixed(2)}%
       </span>)
   },
 ];

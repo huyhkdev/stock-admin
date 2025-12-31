@@ -10,6 +10,7 @@ export interface Contest {
     maxParticipants: number;
     isStrict?: boolean;
     allowJoinEmails?: string[];
+    creatorUid?: string;
 }
 
 export interface ContestParticipant {

@@ -12,7 +12,7 @@ import ContestDetailComponent from "./ContestDetailComponent";
 import { Contest, exportContestOrders, exportContestRanks } from "../../../apis/contests.api";
 import { useCreateContest, useDeleteContest, useUpdateContest } from "../../../hook/useInfoContest";
 import styled from 'styled-components';
-import { filterContestsByKey, getError } from "../../../utils";
+import { filterContestsByKey, getError, getCurrentUserUid } from "../../../utils";
 import moment from "moment";
 import { ContestDetailProps } from "./type";
 
@@ -35,7 +35,6 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
     const { contests, loading } = props;
     const [filteredContests, setFilteredContests] = useState<Contest[]>(contests);
     const [filterOption, setFilterOption] = useState<string>("All");
-    const [contestsSearch, setContestsSearch] = useState<Contest[]>();
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(5);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,10 +46,19 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
     const { mutate: mutateDelete } = useDeleteContest();
     const [dataSource, setDataSource] = useState<Contest[]>(filteredContests);
     const [loadAgain, setLoadAgain] = useState(false);
+    const [showMyContestsOnly, setShowMyContestsOnly] = useState<boolean>(true);
+    const currentUserUid = getCurrentUserUid();
     useEffect(() => {
         if (!loading) {
-            setFilteredContests(contests || []);
-            setDataSource(contests);
+            let filtered = contests || [];
+            
+            // Filter by "My Contest" if enabled
+            if (showMyContestsOnly && currentUserUid) {
+                filtered = filtered.filter(contest => contest.creatorUid === currentUserUid);
+            }
+            
+            setFilteredContests(filtered);
+            setDataSource(filtered);
         }
         if (contests.length === 0) return;
 
@@ -78,7 +86,7 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
             return () => clearTimeout(timer); // Cleanup timer khi unmount
         }
         setLoadAgain(!loadAgain);
-    }, [contests, loading]);
+    }, [contests, loading, showMyContestsOnly, currentUserUid]);
 
 
     const showModal = () => {
@@ -189,47 +197,110 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
         setFilterOption(value);
         let filteredContests: Contest[] = [];
 
+        // First apply "My Contest" filter if enabled
+        let baseContests = contests;
+        if (showMyContestsOnly && currentUserUid) {
+            baseContests = contests.filter(contest => contest.creatorUid === currentUserUid);
+        }
+
         switch (value) {
             case "Today":
-                filteredContests = contests.filter(contest =>
+                filteredContests = baseContests.filter(contest =>
                     moment(contest.startDateTime).isSame(moment(), "day")
                 );
                 break;
             case "This Week":
-                filteredContests = contests.filter(contest =>
+                filteredContests = baseContests.filter(contest =>
                     moment(contest.startDateTime).isSame(moment(), "week")
                 );
                 break;
             case "Last Week":
-                filteredContests = contests.filter(contest =>
+                filteredContests = baseContests.filter(contest =>
                     moment(contest.startDateTime).isSame(moment().subtract(1, "week"), "week")
                 );
                 break;
             case "This Month":
-                filteredContests = contests.filter(contest =>
+                filteredContests = baseContests.filter(contest =>
                     moment(contest.startDateTime).isSame(moment(), "month")
                 );
                 break;
             case "Last Month":
-                filteredContests = contests.filter(contest =>
+                filteredContests = baseContests.filter(contest =>
                     moment(contest.startDateTime).isSame(moment().subtract(1, "month"), "month")
                 );
                 break;
             case "This Year":
-                filteredContests = contests.filter(contest =>
+                filteredContests = baseContests.filter(contest =>
                     moment(contest.startDateTime).isSame(moment(), "year")
                 );
                 break;
             case "Last Year":
-                filteredContests = contests.filter(contest =>
+                filteredContests = baseContests.filter(contest =>
                     moment(contest.startDateTime).isSame(moment().subtract(1, "year"), "year")
                 );
                 break;
             case "All":
-                filteredContests = contests;
+                filteredContests = baseContests;
                 break;
             default:
-                filteredContests = contests;
+                filteredContests = baseContests;
+        }
+
+        setFilteredContests(filteredContests);
+        setDataSource(filteredContests);
+    };
+
+    const handleMyContestToggle = () => {
+        const newValue = !showMyContestsOnly;
+        setShowMyContestsOnly(newValue);
+        
+        // Re-apply filters with new "My Contest" setting
+        let baseContests = contests;
+        if (newValue && currentUserUid) {
+            baseContests = contests.filter(contest => contest.creatorUid === currentUserUid);
+        }
+        
+        // Apply time filter
+        let filteredContests: Contest[] = [];
+        switch (filterOption) {
+            case "Today":
+                filteredContests = baseContests.filter(contest =>
+                    moment(contest.startDateTime).isSame(moment(), "day")
+                );
+                break;
+            case "This Week":
+                filteredContests = baseContests.filter(contest =>
+                    moment(contest.startDateTime).isSame(moment(), "week")
+                );
+                break;
+            case "Last Week":
+                filteredContests = baseContests.filter(contest =>
+                    moment(contest.startDateTime).isSame(moment().subtract(1, "week"), "week")
+                );
+                break;
+            case "This Month":
+                filteredContests = baseContests.filter(contest =>
+                    moment(contest.startDateTime).isSame(moment(), "month")
+                );
+                break;
+            case "Last Month":
+                filteredContests = baseContests.filter(contest =>
+                    moment(contest.startDateTime).isSame(moment().subtract(1, "month"), "month")
+                );
+                break;
+            case "This Year":
+                filteredContests = baseContests.filter(contest =>
+                    moment(contest.startDateTime).isSame(moment(), "year")
+                );
+                break;
+            case "Last Year":
+                filteredContests = baseContests.filter(contest =>
+                    moment(contest.startDateTime).isSame(moment().subtract(1, "year"), "year")
+                );
+                break;
+            case "All":
+            default:
+                filteredContests = baseContests;
         }
 
         setFilteredContests(filteredContests);
@@ -369,8 +440,13 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
         },
     ];
     const handleSearch = (value: string) => {
-        setContestsSearch(filteredContests ? filterContestsByKey(filteredContests, "contestName", value, true) : []);
-        setDataSource(contestsSearch!);
+        if (!value || value.trim() === '') {
+            // If search is empty, show filtered contests
+            setDataSource(filteredContests);
+            return;
+        }
+        const searchResults = filteredContests ? filterContestsByKey(filteredContests, "contestName", value, true) : [];
+        setDataSource(searchResults);
     }
     const onSearch: SearchProps["onSearch"] = (value) => {
         handleSearch(value);
@@ -384,7 +460,13 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
 
             <Space style={{ marginBottom: 16, width: '100%', justifyContent: 'space-between' }}>
                 <Space>
-                    <Select value={filterOption} onChange={handleFilterChange} defaultValue="Today" style={{ width: '10rem' }}>
+                    {/* <Button 
+                        type={showMyContestsOnly ? "primary" : "default"}
+                        onClick={handleMyContestToggle}
+                    >
+                        My Contest
+                    </Button> */}
+                    <Select value={filterOption} onChange={handleFilterChange} style={{ width: '10rem' }}>
                         {filterType.map(type => <Option key={type} value={type}>{type}</Option>)}
                     </Select>
                     <Input.Search placeholder=" Search contest" style={{ width: 200 }}

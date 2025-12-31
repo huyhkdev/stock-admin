@@ -250,62 +250,62 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
         setDataSource(filteredContests);
     };
 
-    const handleMyContestToggle = () => {
-        const newValue = !showMyContestsOnly;
-        setShowMyContestsOnly(newValue);
+    // const handleMyContestToggle = () => {
+    //     const newValue = !showMyContestsOnly;
+    //     setShowMyContestsOnly(newValue);
         
-        // Re-apply filters with new "My Contest" setting
-        let baseContests = contests;
-        if (newValue && currentUserUid) {
-            baseContests = contests.filter(contest => contest.creatorUid === currentUserUid);
-        }
+    //     // Re-apply filters with new "My Contest" setting
+    //     let baseContests = contests;
+    //     if (newValue && currentUserUid) {
+    //         baseContests = contests.filter(contest => contest.creatorUid === currentUserUid);
+    //     }
         
-        // Apply time filter
-        let filteredContests: Contest[] = [];
-        switch (filterOption) {
-            case "Today":
-                filteredContests = baseContests.filter(contest =>
-                    moment(contest.startDateTime).isSame(moment(), "day")
-                );
-                break;
-            case "This Week":
-                filteredContests = baseContests.filter(contest =>
-                    moment(contest.startDateTime).isSame(moment(), "week")
-                );
-                break;
-            case "Last Week":
-                filteredContests = baseContests.filter(contest =>
-                    moment(contest.startDateTime).isSame(moment().subtract(1, "week"), "week")
-                );
-                break;
-            case "This Month":
-                filteredContests = baseContests.filter(contest =>
-                    moment(contest.startDateTime).isSame(moment(), "month")
-                );
-                break;
-            case "Last Month":
-                filteredContests = baseContests.filter(contest =>
-                    moment(contest.startDateTime).isSame(moment().subtract(1, "month"), "month")
-                );
-                break;
-            case "This Year":
-                filteredContests = baseContests.filter(contest =>
-                    moment(contest.startDateTime).isSame(moment(), "year")
-                );
-                break;
-            case "Last Year":
-                filteredContests = baseContests.filter(contest =>
-                    moment(contest.startDateTime).isSame(moment().subtract(1, "year"), "year")
-                );
-                break;
-            case "All":
-            default:
-                filteredContests = baseContests;
-        }
+    //     // Apply time filter
+    //     let filteredContests: Contest[] = [];
+    //     switch (filterOption) {
+    //         case "Today":
+    //             filteredContests = baseContests.filter(contest =>
+    //                 moment(contest.startDateTime).isSame(moment(), "day")
+    //             );
+    //             break;
+    //         case "This Week":
+    //             filteredContests = baseContests.filter(contest =>
+    //                 moment(contest.startDateTime).isSame(moment(), "week")
+    //             );
+    //             break;
+    //         case "Last Week":
+    //             filteredContests = baseContests.filter(contest =>
+    //                 moment(contest.startDateTime).isSame(moment().subtract(1, "week"), "week")
+    //             );
+    //             break;
+    //         case "This Month":
+    //             filteredContests = baseContests.filter(contest =>
+    //                 moment(contest.startDateTime).isSame(moment(), "month")
+    //             );
+    //             break;
+    //         case "Last Month":
+    //             filteredContests = baseContests.filter(contest =>
+    //                 moment(contest.startDateTime).isSame(moment().subtract(1, "month"), "month")
+    //             );
+    //             break;
+    //         case "This Year":
+    //             filteredContests = baseContests.filter(contest =>
+    //                 moment(contest.startDateTime).isSame(moment(), "year")
+    //             );
+    //             break;
+    //         case "Last Year":
+    //             filteredContests = baseContests.filter(contest =>
+    //                 moment(contest.startDateTime).isSame(moment().subtract(1, "year"), "year")
+    //             );
+    //             break;
+    //         case "All":
+    //         default:
+    //             filteredContests = baseContests;
+    //     }
 
-        setFilteredContests(filteredContests);
-        setDataSource(filteredContests);
-    };
+    //     setFilteredContests(filteredContests);
+    //     setDataSource(filteredContests);
+    // };
     const handleTableChange = (pagination: {
         current: number;
         pageSize: number;

@@ -46,7 +46,7 @@ const ListComponent: React.FC<ContestDetailProps> = (props) => {
     const { mutate: mutateDelete } = useDeleteContest();
     const [dataSource, setDataSource] = useState<Contest[]>(filteredContests);
     const [loadAgain, setLoadAgain] = useState(false);
-    const [showMyContestsOnly, setShowMyContestsOnly] = useState<boolean>(true);
+    const [showMyContestsOnly, _] = useState<boolean>(true);
     const currentUserUid = getCurrentUserUid();
     useEffect(() => {
         if (!loading) {

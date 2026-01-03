@@ -192,8 +192,8 @@ const ListComponent: React.FC<Props> = (props) => {
       >
         <h3 style={{ fontSize: 18, fontWeight: 600 }}> Order List</h3>
         <Button type="primary" onClick={onExport} loading={exporting} disabled={exporting}>
-          Export CSV
-        </Button>
+            Export CSV
+          </Button>
       </Space>
       <Space
         style={{

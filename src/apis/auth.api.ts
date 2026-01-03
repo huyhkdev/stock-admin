@@ -61,3 +61,43 @@ export const demoteUsers = async (uids: string[]): Promise<void> => {
 export const resetWallet = async (uid: string, balance: number): Promise<void> => {
   await api.post(`${appUrls.tradeURL}/admin/wallet/reset/${uid}`, { balance });
 }
+
+// Whitelist Email APIs
+export interface WhitelistEmail {
+  id: string;
+  email: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WhitelistResponse {
+  items: WhitelistEmail[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export const getWhitelistEmails = async (page: number = 1, limit: number = 20): Promise<WhitelistResponse> => {
+  const response = await api.get(`${appUrls.authenURL}/admin/whitelist`, {
+    params: { page, limit },
+  });
+  return response.data.data;
+};
+
+export const addWhitelistEmail = async (email: string): Promise<WhitelistEmail> => {
+  const response = await api.post(`${appUrls.authenURL}/admin/whitelist`, { email });
+  return response.data.data;
+};
+
+export const addWhitelistEmails = async (emails: string[]): Promise<{ added: number; skipped: number }> => {
+  const response = await api.post(`${appUrls.authenURL}/admin/whitelist/bulk`, { emails });
+  return response.data.data;
+};
+
+export const deleteWhitelistEmail = async (email: string): Promise<void> => {
+  await api.delete(`${appUrls.authenURL}/admin/whitelist/${encodeURIComponent(email)}`);
+};

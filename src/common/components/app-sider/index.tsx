@@ -6,6 +6,7 @@ import {
   TrophyOutlined,
   UserOutlined,
   BarChartOutlined,
+  SafetyOutlined,
 } from "@ant-design/icons";
 import { StyledSider } from "./style";
 import { Link, useLocation } from "react-router-dom";
@@ -64,6 +65,16 @@ const menuItems = [
   },
   {
     key: "6",
+    label: (
+      <Link onClick={() => onScrollToTop()} to="/whitelist">
+        Email Whitelist
+      </Link>
+    ),
+    path: "/whitelist",
+    icon: <SafetyOutlined />,
+  },
+  {
+    key: "7",
     label: (
       <Link onClick={() => onScrollToTop()} to="https://cloud.umami.is/analytics/us/websites/9d154b8a-b69a-4912-a2a0-4f6d8af76660" target="_blank">
         Analytics

@@ -9,6 +9,7 @@ import LoginScreen from "../tabs/auth/login";
 import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { BannerEventManagement } from "../tabs/management/banner-event";
+import WhitelistManagement from "../tabs/management/whitelist";
 
 const AppRoutes = () => {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ const AppRoutes = () => {
           <Route path="/matching" element={<MatchingManagement />} />
           <Route path="/contest" element={<ContestManagement />} />
           <Route path="/banner-event" element={<BannerEventManagement />} />
+          <Route path="/whitelist" element={<WhitelistManagement />} />
         </>
       ) : (
         <Route path="/login" element={<LoginScreen />} />
